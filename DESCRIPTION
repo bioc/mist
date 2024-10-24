@@ -1,0 +1,26 @@
+Package: mist
+Title: Differential Methylation Analysis for scDNAm Data
+Version: 0.1.0
+Authors@R: 
+    person("Daoyu", "Duan", , "dxd429@case.com", role = c("aut", "cre"),
+           comment = c(ORCID = "YOUR-ORCID-ID"))
+Description: mist (Methylation Inference for Single-cell along Trajectory) is a hierarchical 
+ Bayesian framework for modeling DNA methylation trajectories and performing differential methylation 
+ (DM) analysis in single-cell DNA methylation (scDNAm) data. It estimates developmental-stage-specific 
+ variations, identifies genomic features with drastic changes along pseudotime, and, for two 
+ phenotypic groups, detects features with distinct temporal methylation patterns. mist uses Gibbs 
+ sampling to estimate parameters for temporal changes and stage-specific variations.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
+Imports:
+    BiocParallel,
+    MCMCpack,
+    Matrix,
+    S4Vectors,
+    methods,
+    rtracklayer,
+    stats,
+    car,
+    mvtnorm
