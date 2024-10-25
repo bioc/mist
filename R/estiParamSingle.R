@@ -57,7 +57,7 @@ estiParamSingle <- function(scDNAm_mat,
   ptime <- ptime[is.finite(ptime) & !is.na(ptime)]
   ptime_all <- c(ptime / max(ptime))  # Normalize to [0, 1]
   rm(ptime)  # Remove original pseudotime
-
+  message("Pseudotime cleaning and normalization to [0, 1] completed.")
   ###### 3. Remove Genomic Features Containing Only 0/1 Values in All Timepoints
   # Remove rows (genomic features) with no variation (only 0s or 1s) across all time points
   rmRes <- BiocParallel::bplapply(scDNAm_mat, rmBad, ptime_all = ptime_all)
@@ -65,7 +65,7 @@ estiParamSingle <- function(scDNAm_mat,
   scDNAm_mat_clean <- scDNAm_mat[!1:nrow(scDNAm_mat) %in% rmIndex, ]  # Keep only valid rows
   rm(scDNAm_mat)  # Remove the original matrix to save memory
   rm(rmRes)  # Remove temporary result
-
+  message("Removal of genomic features with too many 0/1 values completed.")
   ###### 4. Parameter Estimation using Gibbs Sampling
   # Perform parameter estimation for each genomic feature (row) using Gibbs sampling
 

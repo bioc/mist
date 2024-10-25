@@ -52,8 +52,8 @@ Here we load the example data from GSE121708.
 library(mist)
 
 # Load sample scDNAm data
-data(scDNAm_GSE121708)
-data(ptime_GSE121708)
+load(system.file("extdata", "ptime_GSE121708.rda", package = "mist"))
+load(system.file("extdata", "scDNAm_GSE121708.rda", package = "mist"))
 ```
 
 # Step 2: Estimate Parameters Using `estiParamSingle`
@@ -82,9 +82,9 @@ In this section, we will estimate parameters and perform DM analysis using data 
 
 ```{r, eval=TRUE, message=FALSE, warning=FALSE}
 # Load two-group scDNAm data
-data(scDNAm_GSE121708)
-data(scDNAm_GSE121708_g2)
-data(ptime_GSE121708)
+load(system.file("extdata", "ptime_GSE121708.rda", package = "mist"))
+load(system.file("extdata", "scDNAm_GSE121708.rda", package = "mist"))
+load(system.file("extdata", "scDNAm_GSE121708_g2.rda", package = "mist"))
 ```
 
 # Step 2: Estimate Parameters Using `estiParamTwoGroups`

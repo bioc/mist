@@ -51,7 +51,7 @@ estiParamTwo <- function(scDNAm_mat_group1,
 
   ptime_group1_all <- ptime_group1 / max(ptime_group1)
   ptime_group2_all <- ptime_group2 / max(ptime_group2)
-
+  message("Pseudotime cleaning and normalization to [0, 1] completed.")
   # 3. Remove Genomic Features with only 0/1 values in both groups
   rmRes_group1 <- BiocParallel::bplapply(scDNAm_mat_group1, rmBad, ptime_all = ptime_group1_all)
   rmRes_group2 <- BiocParallel::bplapply(scDNAm_mat_group2, rmBad, ptime_all = ptime_group2_all)
@@ -61,7 +61,7 @@ estiParamTwo <- function(scDNAm_mat_group1,
 
   scDNAm_mat_clean_group1 <- scDNAm_mat_group1[!1:nrow(scDNAm_mat_group1) %in% rmIndex_group1, ]
   scDNAm_mat_clean_group2 <- scDNAm_mat_group2[!1:nrow(scDNAm_mat_group2) %in% rmIndex_group2, ]
-
+  message("Removal of genomic features with too many 0/1 values completed.")
   # 4. Parameter Estimation using Gibbs Sampling for both groups
   beta_sigma_list_group1 <- bplapply(1:nrow(scDNAm_mat_clean_group1), run_bayesian_estimation,
                                      dat_ready = scDNAm_mat_clean_group1,
