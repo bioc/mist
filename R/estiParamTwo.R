@@ -46,8 +46,8 @@ estiParamTwo <- function(scDNAm_mat_group1,
   }
 
   # 2. Normalize pseudotime to 0-1 for both groups
-  ptime_group1 <- ptime_group1[is.finite(ptime_group1)&!is.na(ptime_group1), , drop=F]
-  ptime_group2 <- ptime_group2[is.finite(ptime_group2)&!is.na(ptime_group2), , drop=F]
+  ptime_group1 <- ptime_group1[is.finite(ptime_group1)&!is.na(ptime_group1)]
+  ptime_group2 <- ptime_group2[is.finite(ptime_group2)&!is.na(ptime_group2)]
 
   ptime_group1_all <- ptime_group1 / max(ptime_group1)
   ptime_group2_all <- ptime_group2 / max(ptime_group2)
@@ -64,14 +64,12 @@ estiParamTwo <- function(scDNAm_mat_group1,
 
   # 4. Parameter Estimation using Gibbs Sampling for both groups
   beta_sigma_list_group1 <- bplapply(1:nrow(scDNAm_mat_clean_group1), run_bayesian_estimation,
-                                     ptime_all = ptime_group1_all,
-                                     scDNAm_mat_clean = scDNAm_mat_clean_group1,
-                                     BPPARAM = MulticoreParam())
+                                     dat_ready = scDNAm_mat_clean_group1,
+                                     ptime_all = ptime_group1_all)
 
   beta_sigma_list_group2 <- bplapply(1:nrow(scDNAm_mat_clean_group2), run_bayesian_estimation,
-                                     ptime_all = ptime_group2_all,
-                                     scDNAm_mat_clean = scDNAm_mat_clean_group2,
-                                     BPPARAM = MulticoreParam())
+                                     dat_ready = scDNAm_mat_clean_group2,
+                                     ptime_all = ptime_group2_all)
 
   # 5. Name the results for both groups
   name_vector <- c("Beta_0", "Beta_1", "Beta_2", "Beta_3", "Beta_4", "Sigma2_1", "Sigma2_2", "Sigma2_3", "Sigma2_4")

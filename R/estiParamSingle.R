@@ -54,7 +54,7 @@ estiParamSingle <- function(scDNAm_mat,
 
   ###### 2. Normalize pseudotime to 0 - 1
   # Normalize pseudotime to a scale between 0 and 1, keeping only finite and non-NA values
-  ptime <- ptime[is.finite(ptime) & !is.na(ptime), , drop = F]
+  ptime <- ptime[is.finite(ptime) & !is.na(ptime)]
   ptime_all <- c(ptime / max(ptime))  # Normalize to [0, 1]
   rm(ptime)  # Remove original pseudotime
 
@@ -68,9 +68,9 @@ estiParamSingle <- function(scDNAm_mat,
 
   ###### 4. Parameter Estimation using Gibbs Sampling
   # Perform parameter estimation for each genomic feature (row) using Gibbs sampling
+
   beta_sigma_list <- bplapply(1:nrow(scDNAm_mat_clean), run_bayesian_estimation,
-                              ptime_all = ptime_all, scDNAm_mat_clean = scDNAm_mat_clean,
-                              BPPARAM = MulticoreParam())
+                              dat_ready = scDNAm_mat_clean, ptime_all = ptime_all)
 
   # Define names for the parameters
   name_vector <- c("Beta_0", "Beta_1", "Beta_2", "Beta_3", "Beta_4", "Sigma2_1", "Sigma2_2", "Sigma2_3", "Sigma2_4")

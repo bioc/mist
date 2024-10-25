@@ -35,7 +35,7 @@ dmSingle <- function(beta_sigma_list) {
 
   ######## 3. Integral Calculation for Each Genomic Feature
   # Parallelized computation of integrals for each genomic feature
-  int_list <- bplapply(beta_mu_mean, calculate_integral, BPPARAM = MulticoreParam())
+  int_list <- bplapply(beta_mu_mean, calculate_integral)
   # Assign names to the integrals based on the genomic feature names
   names(int_list) <- names(beta_mu_mean)
 

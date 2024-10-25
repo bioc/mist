@@ -27,6 +27,12 @@ dmTwoGroups <- function(beta_sigma_list_group) {
     )
   }
 
+  # Find common names between the two sub-lists
+  common_names <- intersect(names(beta_sigma_list_group$Group1),
+                            names(beta_sigma_list_group$Group2))
+  # Subset both sub-lists to keep only common elements
+  beta_sigma_list_group$Group1 <- beta_sigma_list_group$Group1[common_names]
+  beta_sigma_list_group$Group2 <- beta_sigma_list_group$Group2[common_names]
   # Extract the parameter lists for Group 1 and Group 2
   beta_mu_mean_group1 <- beta_sigma_list_group$Group1
   beta_mu_mean_group2 <- beta_sigma_list_group$Group2
@@ -43,7 +49,7 @@ dmTwoGroups <- function(beta_sigma_list_group) {
   # Calculate the integral of differences between the two groups for each feature
   int_list <- bplapply(seq_along(beta_mu_mean_group1), function(i) {
     calculate_integral(beta_mu_mean_group1[[i]], beta_mu_mean_group2[[i]])
-  }, BPPARAM = MulticoreParam())
+  })
 
   # Assign names of the valid features to the result
   names(int_list) <- names(beta_mu_mean_group1)

@@ -1,0 +1,121 @@
+---
+title: "mist:methylation inference for single-cell along trajectory"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{mist_vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Introduction
+
+`mist` (Methylation Inference for Single-cell along Trajectory) is an R package for differential methylation (DM) analysis of single-cell DNA methylation (scDNAm) data. The package models methylation changes along pseudotime and estimates developmental-stage-specific biological variations. It supports both single-group and two-group analyses, enabling users to identify genomic features exhibiting temporal changes in methylation levels or different methylation patterns between groups.
+
+This vignette demonstrates how to use `mist` for:
+1. Single-group analysis.
+2. Two-group analysis.
+
+## Installation
+
+To install the latest version of `mist`, run the following commands:
+
+```{r, eval = FALSE, warning=FALSE, message=FALSE}
+# Install devtools if you don't have it installed already
+install.packages("devtools")
+
+# Install mist from GitHub
+devtools::install_github("https://github.com/dxd429/mist")
+```
+
+From Bioconductor:
+```{r, eval = FALSE, warning=FALSE, message=FALSE}
+if (!requireNamespace("BiocManager", quietly = TRUE)) {
+    install.packages("BiocManager")
+}
+BiocManager::install("mist")
+```
+
+To view the package vignette in HTML format, run the following lines in R:
+
+```{r eval=FALSE,warning=FALSE,message=FALSE}
+library(mist)
+vignette("mist")
+```
+
+## Example Workflow for Single-Group Analysis
+In this section, we will estimate parameters and perform differential methylation analysis using single-group data.
+
+# Step 1: Load Example Data
+Here we load the example data from GSE121708.
+
+```{r, eval=TRUE, message=FALSE, warning=FALSE}
+library(mist)
+
+# Load sample scDNAm data
+data(scDNAm_GSE121708)
+data(ptime_GSE121708)
+```
+
+# Step 2: Estimate Parameters Using `estiParamSingle`
+```{r, eval=TRUE, message=FALSE, warning=FALSE}
+# Estimate parameters for single-group
+beta_sigma_list <- estiParamSingle(scDNAm_GSE121708[1:100,], ptime_GSE121708)
+
+# Check the output
+head(beta_sigma_list)
+```
+
+# Step 3: Perform Differential Methylation Analysis Using `dmSingle`
+```{r, eval=TRUE, message=FALSE, warning=FALSE}
+# Perform differential methylation analysis for the single-group
+dm_results <- dmSingle(beta_sigma_list)
+
+# View the top genomic features with drastic methylation changes
+head(dm_results)
+```
+
+## Example Workflow for Two-Group Analysis
+In this section, we will estimate parameters and perform DM analysis using data from two phenotypic groups.
+
+# Step 1: Load Two-Group Data
+
+
+```{r, eval=TRUE, message=FALSE, warning=FALSE}
+# Load two-group scDNAm data
+data(scDNAm_GSE121708)
+data(scDNAm_GSE121708_g2)
+data(ptime_GSE121708)
+```
+
+# Step 2: Estimate Parameters Using `estiParamTwoGroups`
+```{r, eval=TRUE, message=FALSE, warning=FALSE}
+# Estimate parameters for both groups
+beta_sigma_list_group <- estiParamTwo(
+    scDNAm_GSE121708[1:100,],
+    scDNAm_GSE121708_g2[1:100,],
+    ptime_GSE121708,
+    ptime_GSE121708
+)
+
+# Check the output
+head(beta_sigma_list_group)
+```
+
+# Step 3: Perform Differential Methylation Analysis for Two-Group Comparison Using `dmTwoGroups`
+```{r, eval=TRUE, message=FALSE, warning=FALSE}
+# Perform DM analysis to compare the two groups
+dm_results_two <- dmTwoGroups(beta_sigma_list_group)
+
+# View the top genomic features with different temporal patterns between groups
+head(dm_results_two)
+```
+
+## Conclusion
+`mist` provides a comprehensive suite of tools for analyzing scDNAm data along pseudotime, whether you are working with a single group or comparing two phenotypic groups. With the combination of Bayesian modeling and differential methylation analysis, `mist` is a powerful tool for identifying significant genomic features in scDNAm data.
+
+
+
+
+
+
+

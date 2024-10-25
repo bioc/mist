@@ -1,5 +1,5 @@
-rmBad<- function(x, ptime_all){
-  dat<- x
+rmBad<- function(dat_ori, ptime_all){
+  dat<- dat_ori
   #remove 0 total count
   ind_remove<- is.nan(dat)
   dat<- dat[!ind_remove]
@@ -105,7 +105,7 @@ T_gamma<- function(shape, scale, lower, upper) {
 }
 ####
 # Function to run Bayesian estimation
-run_bayesian_estimation <- function(x, ptime_all, scDNAm_mat_clean){
+run_bayesian_estimation <- function(k, dat_ready, ptime_all){
   tryCatch({
     T_gamma<- function(shape, scale, lower, upper) {
       p_lower <- pgamma(lower, shape = shape, scale = scale)
@@ -132,7 +132,7 @@ run_bayesian_estimation <- function(x, ptime_all, scDNAm_mat_clean){
     lambda2_0 = 1
     tau2_0 = 1
     sigma2 = rep(2, stage_num)
-    dat<- x
+    dat<- dat_ready[k,]
     #remove 0 total count
     ind_remove<- is.nan(dat)
     dat<- dat[!ind_remove]
@@ -265,7 +265,7 @@ run_bayesian_estimation <- function(x, ptime_all, scDNAm_mat_clean){
   }
   , error = function(e) {
     # Return NA or another suitable value for all expected outputs
-   # print(paste("Error in iteration", k, ":", e$message))
+    print(paste("Error in the feature ", names(dat_ready)[k], ":", e$message))
     return(rep(NA, 8)) # Update `length_of_expected_output` accordingly
   })
 

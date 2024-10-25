@@ -24,3 +24,7 @@ Imports:
     stats,
     car,
     mvtnorm
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
