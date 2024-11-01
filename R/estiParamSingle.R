@@ -25,7 +25,7 @@
 #' - \eqn{\sigma^2_3}: The estimated variance for the third stage along the pseudotime.
 #' - \eqn{\sigma^2_4}: The estimated variance for the fourth stage along the pseudotime.
 #'
-#' @import MCMCpack BiocParallel car mvtnorm SummarizedExperiment SingleCellExperiment
+#' @import MCMCpack BiocParallel car mvtnorm SummarizedExperiment SingleCellExperiment BiocGenerics
 #' @importFrom S4Vectors subjectHits queryHits Rle
 #' @importFrom methods is
 #' @importFrom rtracklayer start offset end

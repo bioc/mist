@@ -153,7 +153,7 @@ run_bayesian_estimation <- function(k, dat_ready, ptime_all) {
 
                 s2 <- z_t %*% beta_mu
                 s3 <- mapply(function(s1, s2) s1 - s2, s1, s2, SIMPLIFY = FALSE)
-                s4 <- sapply(s3, function(x) sum((x^2) / 2))
+                s4 <- vapply(s3, function(x) sum((x^2) / 2), numeric(1))
                 scale_ig <- tapply(s4, stages, sum)
 
                 sigma2 <- MCMCpack::rinvgamma(4, shape = shape_ig, scale = scale_ig)
