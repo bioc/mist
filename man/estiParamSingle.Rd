@@ -4,14 +4,19 @@
 \alias{estiParamSingle}
 \title{Parameter estimation for scDNAm data under the 1-group scenario.}
 \usage{
-estiParamSingle(scDNAm_mat, ptime)
+estiParamSingle(Dat_sce, Dat_name, ptime_name)
 }
 \arguments{
-\item{scDNAm_mat}{A numeric matrix containing the single-cell DNA methylation level. Methylation levels
-can be calculated as the ratio of methylation coverage over the total coverage. Genomic feature (gene) names
-are labeled in rownames, and cells are labeled in colnames.}
+\item{Dat_sce}{A character string specifying the file path to the SingleCellExperiment object containing
+the single-cell DNA methylation level. Methylation levels can be calculated as the ratio of methylation
+coverage over the total coverage. Genomic feature (gene) names are labeled in rownames, and cells are
+labeled in colnames.}
 
-\item{ptime}{A numeric vector containing the estimated pseudotime of all cells in "scDNAm_mat".}
+\item{Dat_name}{A character string specifying the name of the assay to extract the methylation level data from
+the SCE obejct. Data matrix should be stored in the 'Assay'.}
+
+\item{ptime_name}{A character string specifying the name of the colData to extract the pseudotime vector from
+the SCE obejct. Pseudotime should be stored in the 'colData'.}
 }
 \value{
 A numeric list of estimated parameters for all genomic features that will be used as the input
@@ -31,4 +36,13 @@ of the function \code{\link{dmSingle}}. Parameters include:
 \description{
 This function performs the Gibbs sampling procedure based on the hierarchical Bayesian modeling,
 to produce the parameters required in the differential methylation analysis.
+}
+\examples{
+library(mist)
+Dat_path <- system.file("extdata", "small_sampleData_sce.rds", package = "mist")
+beta_sigma_list <- estiParamSingle(
+    Dat_sce = Dat_path,
+    Dat_name = "Methy_level_group1",
+    ptime_name = "pseudotime"
+)
 }

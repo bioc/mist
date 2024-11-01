@@ -22,3 +22,13 @@ This function performs DM analysis to identify genomic features showing drastic
 changes along pseudotime, by modeling the methylation changes along pseudotime and estimating
 the developmental-stage-specific biological variations.
 }
+\examples{
+library(mist)
+Dat_path <- system.file("extdata", "small_sampleData_sce.rds", package = "mist")
+beta_sigma_list <- estiParamSingle(
+    Dat_sce = Dat_path,
+    Dat_name = "Methy_level_group1",
+    ptime_name = "pseudotime"
+)
+dm_results <- dmSingle(beta_sigma_list)
+}

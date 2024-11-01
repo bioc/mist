@@ -13,38 +13,48 @@
 #' along pseudotime. The values are sorted in descending order, with larger values
 #' indicating more drastic changes.
 #'
-#' @import stats MCMCpack BiocParallel car mvtnorm
+#' @import MCMCpack BiocParallel car mvtnorm
 #' @importFrom S4Vectors subjectHits queryHits Rle
 #' @importFrom methods is
 #' @importFrom rtracklayer start offset end
 #' @importFrom Matrix cov2cor toeplitz update
+#' @importFrom stats pgamma poly qgamma rnorm runif
 #' @export
+#'
+#' @examples
+#' library(mist)
+#' Dat_path <- system.file("extdata", "small_sampleData_sce.rds", package = "mist")
+#' beta_sigma_list <- estiParamSingle(
+#'     Dat_sce = Dat_path,
+#'     Dat_name = "Methy_level_group1",
+#'     ptime_name = "pseudotime"
+#' )
+#' dm_results <- dmSingle(beta_sigma_list)
 dmSingle <- function(beta_sigma_list) {
+    ######## 1. Input Validation
+    # Check if beta_sigma_list is provided
+    if (is.null(beta_sigma_list)) {
+        stop("Missing the Parameter List!", call. = TRUE)
+    }
 
-  ######## 1. Input Validation
-  # Check if beta_sigma_list is provided
-  if (is.null(beta_sigma_list)) {
-    stop("Missing the Parameter List!", call. = TRUE)
-  }
+    ######## 2. Remove Genomic Features with Invalid Values
+    # Identify and remove genomic features with NA or infinite values
+    bad_elements <- lapply(beta_sigma_list, contains_inf_or_na) # contains_inf_or_na checks for NA/Inf values
+    valid_features <- !unlist(bad_elements) # Features without NA/Inf values
+    beta_mu_mean <- beta_sigma_list[valid_features] # Keep only valid features
 
-  ######## 2. Remove Genomic Features with Invalid Values
-  # Identify and remove genomic features with NA or infinite values
-  bad_elements <- lapply(beta_sigma_list, contains_inf_or_na)  # contains_inf_or_na checks for NA/Inf values
-  valid_features <- !unlist(bad_elements)  # Features without NA/Inf values
-  beta_mu_mean <- beta_sigma_list[valid_features]  # Keep only valid features
+    ######## 3. Integral Calculation for Each Genomic Feature
+    # Parallelized computation of integrals for each genomic feature
+    int_list <- bplapply(beta_mu_mean, calculate_integral)
+    # Assign names to the integrals based on the genomic feature names
+    names(int_list) <- names(beta_mu_mean)
 
-  ######## 3. Integral Calculation for Each Genomic Feature
-  # Parallelized computation of integrals for each genomic feature
-  int_list <- bplapply(beta_mu_mean, calculate_integral)
-  # Assign names to the integrals based on the genomic feature names
-  names(int_list) <- names(beta_mu_mean)
+    ######## 4. Convert to Named Numeric Vector and Sort
+    # Convert the list of integrals to a named numeric vector
+    int_res <- unlist(int_list)
+    # Sort the integrals in descending order (larger values indicate more drastic changes)
+    int_res <- sort(int_res, decreasing = TRUE)
 
-  ######## 4. Convert to Named Numeric Vector and Sort
-  # Convert the list of integrals to a named numeric vector
-  int_res <- unlist(int_list)
-  # Sort the integrals in descending order (larger values indicate more drastic changes)
-  int_res <- sort(int_res, decreasing = TRUE)
-
-  ######## 5. Return the Result
-  return(int_res)
+    ######## 5. Return the Result
+    return(int_res)
 }

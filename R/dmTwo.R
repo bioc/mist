@@ -13,50 +13,65 @@
 #' fitted curves of scDNA methylation levels for the two groups. The values are sorted
 #' in descending order, with larger values indicating more drastic differences between the groups.
 #'
-#' @import stats MCMCpack BiocParallel car mvtnorm
+#' @import MCMCpack BiocParallel car mvtnorm
 #' @importFrom S4Vectors subjectHits queryHits Rle
 #' @importFrom methods is
 #' @importFrom rtracklayer start offset end
 #' @importFrom Matrix cov2cor toeplitz update
+#' @importFrom stats pgamma poly qgamma rnorm runif
 #' @export
+#'
+#' @examples
+#' library(mist)
+#' Dat_path <- system.file("extdata", "small_sampleData_sce.rds", package = "mist")
+#' beta_sigma_list_group <- estiParamTwo(
+#'     Dat_sce = Dat_path,
+#'     Dat_name_g1 = "Methy_level_group1",
+#'     Dat_name_g2 = "Methy_level_group2",
+#'     ptime_name_g1 = "pseudotime",
+#'     ptime_name_g2 = "pseudotime_g2"
+#' )
+#' dm_results_two <- dmTwoGroups(beta_sigma_list_group)
 dmTwoGroups <- function(beta_sigma_list_group) {
-  # Check if input is valid
-  if (is.null(beta_sigma_list_group$Group1) || is.null(beta_sigma_list_group$Group2)) {
-    stop("Missing parameter lists for one or both groups!",
-         call. = TRUE, domain = NULL
+    # Check if input is valid
+    if (is.null(beta_sigma_list_group$Group1) || is.null(beta_sigma_list_group$Group2)) {
+        stop("Missing parameter lists for one or both groups!",
+            call. = TRUE, domain = NULL
+        )
+    }
+
+    # Find common names between the two sub-lists
+    common_names <- intersect(
+        names(beta_sigma_list_group$Group1),
+        names(beta_sigma_list_group$Group2)
     )
-  }
+    # Subset both sub-lists to keep only common elements
+    beta_sigma_list_group$Group1 <- beta_sigma_list_group$Group1[common_names]
+    beta_sigma_list_group$Group2 <- beta_sigma_list_group$Group2[common_names]
+    # Extract the parameter lists for Group 1 and Group 2
+    beta_mu_mean_group1 <- beta_sigma_list_group$Group1
+    beta_mu_mean_group2 <- beta_sigma_list_group$Group2
 
-  # Find common names between the two sub-lists
-  common_names <- intersect(names(beta_sigma_list_group$Group1),
-                            names(beta_sigma_list_group$Group2))
-  # Subset both sub-lists to keep only common elements
-  beta_sigma_list_group$Group1 <- beta_sigma_list_group$Group1[common_names]
-  beta_sigma_list_group$Group2 <- beta_sigma_list_group$Group2[common_names]
-  # Extract the parameter lists for Group 1 and Group 2
-  beta_mu_mean_group1 <- beta_sigma_list_group$Group1
-  beta_mu_mean_group2 <- beta_sigma_list_group$Group2
+    # Remove features with invalid values (NA/Inf) in either group
+    bad_elements_group1 <- lapply(beta_mu_mean_group1, contains_inf_or_na)
+    bad_elements_group2 <- lapply(beta_mu_mean_group2, contains_inf_or_na)
 
-  # Remove features with invalid values (NA/Inf) in either group
-  bad_elements_group1 <- lapply(beta_mu_mean_group1, contains_inf_or_na)
-  bad_elements_group2 <- lapply(beta_mu_mean_group2, contains_inf_or_na)
+    # Keep only features that are valid in both groups
+    valid_features <- !unlist(bad_elements_group1) & !unlist(bad_elements_group2)
+    beta_mu_mean_group1 <- beta_mu_mean_group1[valid_features]
+    beta_mu_mean_group2 <- beta_mu_mean_group2[valid_features]
 
-  # Keep only features that are valid in both groups
-  valid_features <- !unlist(bad_elements_group1) & !unlist(bad_elements_group2)
-  beta_mu_mean_group1 <- beta_mu_mean_group1[valid_features]
-  beta_mu_mean_group2 <- beta_mu_mean_group2[valid_features]
+    # Calculate the integral of differences between the two groups for each feature
+    int_list <- bplapply(seq_along(beta_mu_mean_group1), function(i) {
+        calculate_integral(beta_mu_mean_group1[[i]], beta_mu_mean_group2[[i]])
+    })
 
-  # Calculate the integral of differences between the two groups for each feature
-  int_list <- bplapply(seq_along(beta_mu_mean_group1), function(i) {
-    calculate_integral(beta_mu_mean_group1[[i]], beta_mu_mean_group2[[i]])
-  })
+    # Assign names of the valid features to the result
+    names(int_list) <- names(beta_mu_mean_group1)
 
-  # Assign names of the valid features to the result
-  names(int_list) <- names(beta_mu_mean_group1)
+    # Convert the list of integrals to a named numeric vector and sort in descending order
+    int_res <- unlist(int_list)
+    int_res <- sort(int_res, decreasing = TRUE)
 
-  # Convert the list of integrals to a named numeric vector and sort in descending order
-  int_res <- unlist(int_list)
-  int_res <- sort(int_res, decreasing = TRUE)
-
-  return(int_res)
+    return(int_res)
 }

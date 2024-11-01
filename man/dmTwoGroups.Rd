@@ -24,3 +24,15 @@ This function performs DM analysis to identify genomic features showing drastic
 changes between two groups along pseudotime, by modeling the methylation changes
 and comparing the fitted curves for each group.
 }
+\examples{
+library(mist)
+Dat_path <- system.file("extdata", "small_sampleData_sce.rds", package = "mist")
+beta_sigma_list_group <- estiParamTwo(
+    Dat_sce = Dat_path,
+    Dat_name_g1 = "Methy_level_group1",
+    Dat_name_g2 = "Methy_level_group2",
+    ptime_name_g1 = "pseudotime",
+    ptime_name_g2 = "pseudotime_g2"
+)
+dm_results_two <- dmTwoGroups(beta_sigma_list_group)
+}

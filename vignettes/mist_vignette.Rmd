@@ -9,7 +9,7 @@ vignette: >
 
 ## Introduction
 
-`mist` (Methylation Inference for Single-cell along Trajectory) is an R package for differential methylation (DM) analysis of single-cell DNA methylation (scDNAm) data. The package models methylation changes along pseudotime and estimates developmental-stage-specific biological variations. It supports both single-group and two-group analyses, enabling users to identify genomic features exhibiting temporal changes in methylation levels or different methylation patterns between groups.
+`mist` (Methylation Inference for Single-cell along Trajectory) is an R package for differential methylation (DM) analysis of single-cell DNA methylation (scDNAm) data. The package employs a Bayesian approach to model methylation changes along pseudotime and estimates developmental-stage-specific biological variations. It supports both single-group and two-group analyses, enabling users to identify genomic features exhibiting temporal changes in methylation levels or different methylation patterns between groups.
 
 This vignette demonstrates how to use `mist` for:
 1. Single-group analysis.
@@ -50,16 +50,19 @@ Here we load the example data from GSE121708.
 
 ```{r, eval=TRUE, message=FALSE, warning=FALSE}
 library(mist)
-
+library(SingleCellExperiment)
 # Load sample scDNAm data
-load(system.file("extdata", "ptime_GSE121708.rda", package = "mist"))
-load(system.file("extdata", "scDNAm_GSE121708.rda", package = "mist"))
+Dat_path <- system.file("extdata", "sampleData_sce.rds", package = "mist")
 ```
 
 # Step 2: Estimate Parameters Using `estiParamSingle`
 ```{r, eval=TRUE, message=FALSE, warning=FALSE}
 # Estimate parameters for single-group
-beta_sigma_list <- estiParamSingle(scDNAm_GSE121708[1:100,], ptime_GSE121708)
+beta_sigma_list <- estiParamSingle(
+    Dat_sce = Dat_path,
+    Dat_name = "Methy_level_group1",
+    ptime_name = "pseudotime"
+)
 
 # Check the output
 head(beta_sigma_list)
@@ -82,23 +85,24 @@ In this section, we will estimate parameters and perform DM analysis using data 
 
 ```{r, eval=TRUE, message=FALSE, warning=FALSE}
 # Load two-group scDNAm data
-load(system.file("extdata", "ptime_GSE121708.rda", package = "mist"))
-load(system.file("extdata", "scDNAm_GSE121708.rda", package = "mist"))
-load(system.file("extdata", "scDNAm_GSE121708_g2.rda", package = "mist"))
+Dat_path <- system.file("extdata", "sampleData_sce.rds", package = "mist")
 ```
 
 # Step 2: Estimate Parameters Using `estiParamTwoGroups`
 ```{r, eval=TRUE, message=FALSE, warning=FALSE}
 # Estimate parameters for both groups
 beta_sigma_list_group <- estiParamTwo(
-    scDNAm_GSE121708[1:100,],
-    scDNAm_GSE121708_g2[1:100,],
-    ptime_GSE121708,
-    ptime_GSE121708
+    Dat_sce = Dat_path,
+    Dat_name_g1 = "Methy_level_group1",
+    Dat_name_g2 = "Methy_level_group2",
+    ptime_name_g1 = "pseudotime",
+    ptime_name_g2 = "pseudotime_g2"
 )
 
 # Check the output
-head(beta_sigma_list_group)
+names(beta_sigma_list_group)
+head(beta_sigma_list_group[[1]], n = 3)
+head(beta_sigma_list_group[[2]], n = 3)
 ```
 
 # Step 3: Perform Differential Methylation Analysis for Two-Group Comparison Using `dmTwoGroups`
@@ -113,7 +117,11 @@ head(dm_results_two)
 ## Conclusion
 `mist` provides a comprehensive suite of tools for analyzing scDNAm data along pseudotime, whether you are working with a single group or comparing two phenotypic groups. With the combination of Bayesian modeling and differential methylation analysis, `mist` is a powerful tool for identifying significant genomic features in scDNAm data.
 
+# Session info {.unnumbered}
 
+```{r sessionInfo, echo=FALSE}
+sessionInfo()
+```
 
 
 
