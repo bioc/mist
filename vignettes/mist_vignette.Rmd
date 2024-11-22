@@ -52,14 +52,14 @@ Here we load the example data from GSE121708.
 library(mist)
 library(SingleCellExperiment)
 # Load sample scDNAm data
-Dat_path <- system.file("extdata", "sampleData_sce.rds", package = "mist")
+Dat_sce <- readRDS(system.file("extdata", "sampleData_sce.rds", package = "mist"))
 ```
 
 # Step 2: Estimate Parameters Using `estiParamSingle`
 ```{r, eval=TRUE, message=FALSE, warning=FALSE}
 # Estimate parameters for single-group
 beta_sigma_list <- estiParamSingle(
-    Dat_sce = Dat_path,
+    Dat_sce = Dat_sce,
     Dat_name = "Methy_level_group1",
     ptime_name = "pseudotime"
 )
@@ -85,14 +85,14 @@ In this section, we will estimate parameters and perform DM analysis using data 
 
 ```{r, eval=TRUE, message=FALSE, warning=FALSE}
 # Load two-group scDNAm data
-Dat_path <- system.file("extdata", "sampleData_sce.rds", package = "mist")
+Dat_path <- readRDS(system.file("extdata", "sampleData_sce.rds", package = "mist"))
 ```
 
 # Step 2: Estimate Parameters Using `estiParamTwoGroups`
 ```{r, eval=TRUE, message=FALSE, warning=FALSE}
 # Estimate parameters for both groups
 beta_sigma_list_group <- estiParamTwo(
-    Dat_sce = Dat_path,
+    Dat_sce = Dat_sce,
     Dat_name_g1 = "Methy_level_group1",
     Dat_name_g2 = "Methy_level_group2",
     ptime_name_g1 = "pseudotime",

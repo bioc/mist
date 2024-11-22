@@ -2,47 +2,40 @@
 % Please edit documentation in R/estiParamTwo.R
 \name{estiParamTwo}
 \alias{estiParamTwo}
-\title{Parameter estimation for scDNAm data under the 2-group scenario.}
+\title{Parameter Estimation for Two-Group Scenario}
 \usage{
 estiParamTwo(Dat_sce, Dat_name_g1, Dat_name_g2, ptime_name_g1, ptime_name_g2)
 }
 \arguments{
-\item{Dat_sce}{A character string specifying the file path to the SingleCellExperiment object containing
-the single-cell DNA methylation level. Methylation levels can be calculated as the ratio of methylation
-coverage over the total coverage. Genomic feature (gene) names are labeled in rownames, and cells are
-labeled in colnames.}
+\item{Dat_sce}{A \code{SingleCellExperiment} object containing the single-cell DNA methylation level.
+Methylation levels should be stored as assays, with genomic feature (gene) names in rownames
+and cells in colnames.}
 
-\item{Dat_name_g1}{A character string specifying the name of the assay to extract the group 1 methylation
-level data from the SCE obejct. Data matrix should be stored in the 'Assay'.}
+\item{Dat_name_g1}{A character string specifying the name of the assay to extract the group 1 methylation level data.}
 
-\item{Dat_name_g2}{A character string specifying the name of the assay to extract the group 2 methylation
-level data from the SCE obejct. Data matrix should be stored in the 'Assay'.}
+\item{Dat_name_g2}{A character string specifying the name of the assay to extract the group 2 methylation level data.}
 
-\item{ptime_name_g1}{A character string specifying the name of the colData to extract the group 1 pseudotime
-vector from the SCE obejct. Pseudotime should be stored in the 'colData'.}
+\item{ptime_name_g1}{A character string specifying the name of the column in \code{colData} for the group 1 pseudotime vector.}
 
-\item{ptime_name_g2}{A character string specifying the name of the colData to extract the group 2 pseudotime
-vector from the SCE obejct. Pseudotime should be stored in the 'colData'.}
+\item{ptime_name_g2}{A character string specifying the name of the column in \code{colData} for the group 2 pseudotime vector.}
 }
 \value{
 A list containing two elements, one for each group, where each element is a numeric list of estimated
 parameters for all genomic features. Each element includes:
 \itemize{
-\item \eqn{\beta_0}, \eqn{\beta_1}, \eqn{\beta_2}, \eqn{\beta_3}, \eqn{\beta_4}: The estimated coefficients for
-the polynomial of degree 4.
-\item \eqn{\sigma^2_1}, \eqn{\sigma^2_2}, \eqn{\sigma^2_3}, \eqn{\sigma^2_4}: The estimated variances for each
-stage along the pseudotime.
+\item \eqn{\beta_0} to \eqn{\beta_4}: Estimated coefficients for the polynomial of degree 4.
+\item \eqn{\sigma^2_1} to \eqn{\sigma^2_4}: Estimated variances for each stage along the pseudotime.
 }
 }
 \description{
 This function performs the Gibbs sampling procedure based on hierarchical Bayesian modeling,
-separately for two groups, to produce the parameters required in the differential methylation analysis.
+separately for two groups, to produce the parameters required for differential methylation analysis.
 }
 \examples{
-library(mist)
-Dat_path <- system.file("extdata", "small_sampleData_sce.rds", package = "mist")
+library(SingleCellExperiment)
+data <- readRDS(system.file("extdata", "small_sampleData_sce.rds", package = "mist"))
 beta_sigma_list_group <- estiParamTwo(
-    Dat_sce = Dat_path,
+    Dat_sce = data,
     Dat_name_g1 = "Methy_level_group1",
     Dat_name_g2 = "Methy_level_group2",
     ptime_name_g1 = "pseudotime",

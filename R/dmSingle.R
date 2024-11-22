@@ -23,9 +23,9 @@
 #'
 #' @examples
 #' library(mist)
-#' Dat_path <- system.file("extdata", "small_sampleData_sce.rds", package = "mist")
+#' data <- readRDS(system.file("extdata", "small_sampleData_sce.rds", package = "mist"))
 #' beta_sigma_list <- estiParamSingle(
-#'     Dat_sce = Dat_path,
+#'     Dat_sce = data,
 #'     Dat_name = "Methy_level_group1",
 #'     ptime_name = "pseudotime"
 #' )
