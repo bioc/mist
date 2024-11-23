@@ -13,6 +13,7 @@
 #'
 #' @return A ggplot2 scatter plot with an overlayed fitted curve.
 #' @import ggplot2
+#' @export
 #' @examples
 #' \dontrun{
 #' plotGene(Dat_sce = Dat_sce,
