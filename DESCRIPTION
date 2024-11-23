@@ -28,7 +28,8 @@ Imports:
     SummarizedExperiment,
     SingleCellExperiment,
     BiocGenerics,
-    stats
+    stats,
+    ggplot2
 Suggests: 
     knitr,
     rmarkdown

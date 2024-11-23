@@ -77,6 +77,15 @@ dm_results <- dmSingle(beta_sigma_list)
 head(dm_results)
 ```
 
+# Step 4: Perform Differential Methylation Analysis Using `plotGene`
+```{r, eval=TRUE, message=FALSE, warning=FALSE}
+# Produce scatterplot with fitted curve of a specific gene
+plotGene(Dat_sce = Dat_sce,
+         Dat_name = "Methy_level_group1",
+         ptime_name = "pseudotime", 
+         beta_sigma_list, 
+         gene_name = "ENSMUSG00000000037")
+```
 ## Example Workflow for Two-Group Analysis
 In this section, we will estimate parameters and perform DM analysis using data from two phenotypic groups.
 
