@@ -47,14 +47,14 @@ plotGene <- function(Dat_sce, Dat_name, ptime_name, beta_sigma_list, gene_name) 
   if (!gene_name %in% names(beta_sigma_list)) {
     stop("The specified gene name is not found in the beta_sigma_list.")
   }
-  coefficients <- beta_sigma_list[[gene_name]][1:5] # Beta_0 to Beta_4
+  coefficients <- beta_sigma_list[[gene_name]][seq_len(5)] # Beta_0 to Beta_4
 
   # Generate the fitted values using the degree-4 polynomial and inverse logit transformation
-  fitted_values <- sapply(pseudotime, function(t) {
+  fitted_values <- vapply(pseudotime, function(t) {
     z_t <- c(1, t, t^2, t^3, t^4) # Polynomial terms (include intercept)
     linear_predictor <- sum(z_t * coefficients) # Degree-4 polynomial
     1 / (1 + exp(-linear_predictor)) # Inverse logit transformation
-  })
+  }, numeric(1))
 
   # Create the scatter plot with the fitted curve
   plot_data <- data.frame(
