@@ -12,7 +12,7 @@
 #' @param gene_name A character string specifying the gene name to plot.
 #'
 #' @return A ggplot2 scatter plot with an overlayed fitted curve.
-#' @import ggplot2
+#' @import ggplot2 rlang
 #' @export
 #'
 #' @examples
@@ -57,16 +57,15 @@ plotGene <- function(Dat_sce, Dat_name, ptime_name, beta_sigma_list, gene_name) 
   })
 
   # Create the scatter plot with the fitted curve
-  library(ggplot2)
   plot_data <- data.frame(
     Pseudotime = pseudotime,
     Methylation = methylation_levels,
     Fitted = fitted_values
   )
 
-  ggplot(plot_data, aes(x = Pseudotime)) +
-    geom_point(aes(y = Methylation), color = "blue", alpha = 0.7, size = 2) +
-    geom_line(aes(y = Fitted), color = "red", linewidth = 1) +
+  ggplot(plot_data, aes(x = .data$Pseudotime)) +
+    geom_point(aes(y = .data$Methylation), color = "blue", alpha = 0.7, size = 2) +
+    geom_line(aes(y = .data$Fitted), color = "red", linewidth = 1) +
     labs(
       title = paste("Methylation Levels vs. Pseudotime for Gene:", gene_name),
       x = "Pseudotime",

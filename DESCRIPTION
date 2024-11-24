@@ -29,7 +29,8 @@ Imports:
     SingleCellExperiment,
     BiocGenerics,
     stats,
-    ggplot2
+    ggplot2,
+    rlang
 Suggests: 
     knitr,
     rmarkdown
