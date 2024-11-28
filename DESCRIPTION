@@ -1,9 +1,9 @@
 Package: mist
 Title: Differential Methylation Analysis for scDNAm Data
-Version: 0.99.1
+Version: 0.99.2
 Depends: R (>= 4.3.0)
 Authors@R: 
-    person("Daoyu", "Duan", , "dxd429@case.com", role = c("aut", "cre"),
+    person("Daoyu", "Duan", , "dxd429@case.edu", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-3147-2006"))
 Description: mist (Methylation Inference for Single-cell along Trajectory) is a hierarchical 
  Bayesian framework for modeling DNA methylation trajectories and performing differential methylation 
@@ -33,5 +33,6 @@ Imports:
     rlang
 Suggests: 
     knitr,
-    rmarkdown
+    rmarkdown,
+    RUnit
 VignetteBuilder: knitr
