@@ -12,7 +12,8 @@
 #' @param gene_name A character string specifying the gene name to plot.
 #'
 #' @return A ggplot2 scatter plot with an overlayed fitted curve.
-#' @import ggplot2 rlang
+#' @import rlang
+#' @importFrom ggplot2 ggplot aes geom_line geom_point labs theme_classic
 #' @export
 #'
 #' @examples
