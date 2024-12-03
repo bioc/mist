@@ -52,7 +52,7 @@ Here we load the example data from GSE121708.
 library(mist)
 library(SingleCellExperiment)
 # Load sample scDNAm data
-Dat_sce <- readRDS(system.file("extdata", "sampleData_sce.rds", package = "mist"))
+Dat_sce <- readRDS(system.file("extdata", "small_sampleData_sce.rds", package = "mist"))
 ```
 
 # Step 2: Estimate Parameters Using `estiParamSingle`
@@ -95,7 +95,7 @@ In this section, we will estimate parameters and perform DM analysis using data 
 
 ```{r, eval=TRUE, message=FALSE, warning=FALSE}
 # Load two-group scDNAm data
-Dat_path <- readRDS(system.file("extdata", "sampleData_sce.rds", package = "mist"))
+Dat_path <- readRDS(system.file("extdata", "small_sampleData_sce.rds", package = "mist"))
 ```
 
 # Step 2: Estimate Parameters Using `estiParamTwoGroups`
