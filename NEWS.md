@@ -8,6 +8,6 @@
 * Added BPPARAM = SnowParam() to bplapply() used in functions.
 * Updated functions to use the sce object as both the input and ouput.
 
-# mist 0.99.12
+# mist 0.99.13
 
 * Added ggplot2 check in plotGene()

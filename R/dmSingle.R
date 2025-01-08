@@ -33,41 +33,38 @@
 #' )
 #' dm_sce <- dmSingle(Dat_sce_new)
 dmSingle <- function(Dat_sce) {
-    ######## 1. Input Validation
-  # Check if Dat_sce is a SingleCellExperiment object
+  ######## 1. Input Validation
+  # Ensure input is a SingleCellExperiment object
   if (!methods::is(Dat_sce, "SingleCellExperiment")) {
     stop("Dat_sce must be a SingleCellExperiment object.",
          call. = TRUE, domain = NULL)
   }
-
-    ######## 2. Remove Genomic Features with Invalid Values
-    # Extract the matrix from rowData
-    mist_pars_matrix <- rowData(Dat_sce)$mist_pars
   
-    # Convert the matrix back to a list
-    beta_sigma_list <- split(as.data.frame(mist_pars_matrix), rownames(mist_pars_matrix))
+  ######## 2. Remove Genomic Features with Invalid Values
+  # Extract the parameter matrix from rowData
+  mist_pars_matrix <- rowData(Dat_sce)$mist_pars
   
-    # Convert each row back to a numeric vector
-    beta_sigma_list <- lapply(beta_sigma_list, as.numeric)
+  # Split matrix rows into a list of numeric vectors
+  beta_sigma_list <- lapply(split(as.data.frame(mist_pars_matrix), rownames(mist_pars_matrix)), as.numeric)
   
-    # Identify and remove genomic features with NA or infinite values
-    bad_elements <- lapply(beta_sigma_list, contains_inf_or_na) # contains_inf_or_na checks for NA/Inf values
-    valid_features <- !unlist(bad_elements) # Features without NA/Inf values
-    beta_mu_mean <- beta_sigma_list[valid_features] # Keep only valid features
-
-    ######## 3. Integral Calculation for Each Genomic Feature
-    # Parallelized computation of integrals for each genomic feature
-    int_list <- bplapply(beta_mu_mean, calculate_integral,
-                         BPPARAM = SnowParam())
-    # Assign names to the integrals based on the genomic feature names
-    names(int_list) <- names(beta_mu_mean)
-
-    ######## 4. Convert to Named Numeric Vector and Sort
-    # Convert the list of integrals to a named numeric vector
-    int_res <- unlist(int_list)
-    # Sort the integrals in descending order (larger values indicate more drastic changes)
-    int_res <- sort(int_res, decreasing = TRUE)
-    rowData(Dat_sce)$mist_int <- int_res
-    ######## 5. Return the Result
-    return(Dat_sce)
+  # Identify valid features (no NA/Inf values) in a single step
+  valid_features <- sapply(beta_sigma_list, function(x) all(is.finite(x)))
+  
+  # Subset valid features only
+  beta_mu_mean <- beta_sigma_list[valid_features]
+  
+  ######## 3. Integral Calculation for Each Genomic Feature
+  # Compute integrals in parallel with efficient chunking
+  int_list <- bplapply(beta_mu_mean, calculate_integral, BPPARAM = SnowParam())
+  
+  # Assign names of valid features to the result
+  names(int_list) <- names(beta_mu_mean)
+  
+  ######## 4. Convert to Named Numeric Vector and Sort
+  # Flatten the list of integrals and sort in descending order
+  int_res <- sort(unlist(int_list), decreasing = TRUE)
+  
+  ######## 5. Save Results and Return
+  rowData(Dat_sce)$mist_int <- int_res
+  return(Dat_sce)
 }

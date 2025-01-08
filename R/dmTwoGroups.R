@@ -38,48 +38,45 @@ dmTwoGroups <- function(Dat_sce) {
     stop("Dat_sce must be a SingleCellExperiment object.",
          call. = TRUE, domain = NULL)
   }
+  
+  # Extract parameter matrices
   mist_pars_matrix1 <- rowData(Dat_sce)$mist_pars_group1
   mist_pars_matrix2 <- rowData(Dat_sce)$mist_pars_group2
   
-  beta_sigma_list1 <- split(as.data.frame(mist_pars_matrix1), rownames(mist_pars_matrix1))
-  beta_sigma_list2 <- split(as.data.frame(mist_pars_matrix2), rownames(mist_pars_matrix2))
-  # Convert each row back to a numeric vector
-  beta_sigma_list1 <- lapply(beta_sigma_list1, as.numeric) 
-  beta_sigma_list2 <- lapply(beta_sigma_list2, as.numeric) 
-  beta_sigma_list_group <- list(Group1 = beta_sigma_list1, Group2 = beta_sigma_list2)
-    # Find common names between the two sub-lists
-    common_names <- intersect(
-        names(beta_sigma_list_group$Group1),
-        names(beta_sigma_list_group$Group2)
+  # Split into lists once, and avoid repeated conversions
+  beta_sigma_list_group <- list(
+    Group1 = split(as.data.frame(mist_pars_matrix1), rownames(mist_pars_matrix1)),
+    Group2 = split(as.data.frame(mist_pars_matrix2), rownames(mist_pars_matrix2))
+  )
+  
+  # Find and keep only common features
+  common_names <- intersect(names(beta_sigma_list_group$Group1), 
+                            names(beta_sigma_list_group$Group2))
+  beta_sigma_list_group <- lapply(beta_sigma_list_group, `[`, common_names)
+  
+  # Simplify feature validation using vectorized operations
+  valid_features <- sapply(common_names, function(name) {
+    all(is.finite(as.numeric(beta_sigma_list_group$Group1[[name]]))) && 
+      all(is.finite(as.numeric(beta_sigma_list_group$Group2[[name]])))
+  })
+  
+  # Subset valid features only
+  beta_mu_mean_group1 <- beta_sigma_list_group$Group1[valid_features]
+  beta_mu_mean_group2 <- beta_sigma_list_group$Group2[valid_features]
+  
+  # Efficient parallel computation of integrals
+  int_list <- bplapply(seq_along(beta_mu_mean_group1), function(i) {
+    calculate_integral(
+      as.numeric(beta_mu_mean_group1[[i]]), 
+      as.numeric(beta_mu_mean_group2[[i]])
     )
-    # Subset both sub-lists to keep only common elements
-    beta_sigma_list_group$Group1 <- beta_sigma_list_group$Group1[common_names]
-    beta_sigma_list_group$Group2 <- beta_sigma_list_group$Group2[common_names]
-    # Extract the parameter lists for Group 1 and Group 2
-    beta_mu_mean_group1 <- beta_sigma_list_group$Group1
-    beta_mu_mean_group2 <- beta_sigma_list_group$Group2
-
-    # Remove features with invalid values (NA/Inf) in either group
-    bad_elements_group1 <- lapply(beta_mu_mean_group1, contains_inf_or_na)
-    bad_elements_group2 <- lapply(beta_mu_mean_group2, contains_inf_or_na)
-
-    # Keep only features that are valid in both groups
-    valid_features <- !unlist(bad_elements_group1) & !unlist(bad_elements_group2)
-    beta_mu_mean_group1 <- beta_mu_mean_group1[valid_features]
-    beta_mu_mean_group2 <- beta_mu_mean_group2[valid_features]
-
-    # Calculate the integral of differences between the two groups for each feature
-    int_list <- bplapply(seq_along(beta_mu_mean_group1), function(i) {
-        calculate_integral(beta_mu_mean_group1[[i]], beta_mu_mean_group2[[i]])
-    },
-    BPPARAM = SnowParam())
-
-    # Assign names of the valid features to the result
-    names(int_list) <- names(beta_mu_mean_group1)
-
-    # Convert the list of integrals to a named numeric vector and sort in descending order
-    int_res <- unlist(int_list)
-    int_res <- sort(int_res, decreasing = TRUE)
-    rowData(Dat_sce)$mist_int_2group <- int_res
-    return(Dat_sce)
+  }, BPPARAM = SnowParam())
+  
+  # Name the results and sort
+  names(int_list) <- names(beta_mu_mean_group1)
+  int_res <- sort(unlist(int_list), decreasing = TRUE)
+  
+  # Assign results to rowData and return
+  rowData(Dat_sce)$mist_int_2group <- int_res
+  return(Dat_sce)
 }
