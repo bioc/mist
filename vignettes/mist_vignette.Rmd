@@ -1,6 +1,9 @@
 ---
 title: "mist:methylation inference for single-cell along trajectory"
-output: rmarkdown::html_vignette
+output:
+  BiocStyle::html_document:
+    toc: true
+    toc_depth: 2
 vignette: >
   %\VignetteIndexEntry{mist_vignette}
   %\VignetteEngine{knitr::rmarkdown}
@@ -20,11 +23,12 @@ This vignette demonstrates how to use `mist` for:
 To install the latest version of `mist`, run the following commands:
 
 ```{r, eval = FALSE, warning=FALSE, message=FALSE}
-# Install devtools if you don't have it installed already
-install.packages("devtools")
+if (!requireNamespace("BiocManager", quietly = TRUE)) {
+    install.packages("BiocManager")
+}
 
 # Install mist from GitHub
-devtools::install_github("https://github.com/dxd429/mist")
+BiocManager::install("https://github.com/dxd429/mist")
 ```
 
 From Bioconductor:
@@ -58,32 +62,32 @@ Dat_sce <- readRDS(system.file("extdata", "small_sampleData_sce.rds", package = 
 # Step 2: Estimate Parameters Using `estiParamSingle`
 ```{r, eval=TRUE, message=FALSE, warning=FALSE}
 # Estimate parameters for single-group
-beta_sigma_list <- estiParamSingle(
+Dat_sce <- estiParamSingle(
     Dat_sce = Dat_sce,
     Dat_name = "Methy_level_group1",
     ptime_name = "pseudotime"
 )
 
 # Check the output
-head(beta_sigma_list)
+head(rowData(Dat_sce)$mist_pars)
 ```
 
 # Step 3: Perform Differential Methylation Analysis Using `dmSingle`
 ```{r, eval=TRUE, message=FALSE, warning=FALSE}
 # Perform differential methylation analysis for the single-group
-dm_results <- dmSingle(beta_sigma_list)
+Dat_sce <- dmSingle(Dat_sce)
 
 # View the top genomic features with drastic methylation changes
-head(dm_results)
+head(rowData(Dat_sce)$mist_int)
 ```
 
 # Step 4: Perform Differential Methylation Analysis Using `plotGene`
 ```{r eval=TRUE, fig.height=5, fig.width=8, message=FALSE, warning=FALSE, out.width='100%'}
 # Produce scatterplot with fitted curve of a specific gene
+library(ggplot2)
 plotGene(Dat_sce = Dat_sce,
          Dat_name = "Methy_level_group1",
          ptime_name = "pseudotime", 
-         beta_sigma_list, 
          gene_name = "ENSMUSG00000000037")
 ```
 
@@ -95,13 +99,13 @@ In this section, we will estimate parameters and perform DM analysis using data 
 
 ```{r, eval=TRUE, message=FALSE, warning=FALSE}
 # Load two-group scDNAm data
-Dat_path <- readRDS(system.file("extdata", "small_sampleData_sce.rds", package = "mist"))
+Dat_sce <- readRDS(system.file("extdata", "small_sampleData_sce.rds", package = "mist"))
 ```
 
 # Step 2: Estimate Parameters Using `estiParamTwoGroups`
 ```{r, eval=TRUE, message=FALSE, warning=FALSE}
 # Estimate parameters for both groups
-beta_sigma_list_group <- estiParamTwo(
+Dat_sce <- estiParamTwo(
     Dat_sce = Dat_sce,
     Dat_name_g1 = "Methy_level_group1",
     Dat_name_g2 = "Methy_level_group2",
@@ -110,18 +114,17 @@ beta_sigma_list_group <- estiParamTwo(
 )
 
 # Check the output
-names(beta_sigma_list_group)
-head(beta_sigma_list_group[[1]], n = 3)
-head(beta_sigma_list_group[[2]], n = 3)
+head(rowData(Dat_sce)$mist_pars_group1, n = 3)
+head(rowData(Dat_sce)$mist_pars_group2, n = 3)
 ```
 
 # Step 3: Perform Differential Methylation Analysis for Two-Group Comparison Using `dmTwoGroups`
 ```{r, eval=TRUE, message=FALSE, warning=FALSE}
 # Perform DM analysis to compare the two groups
-dm_results_two <- dmTwoGroups(beta_sigma_list_group)
+Dat_sce <- dmTwoGroups(Dat_sce)
 
 # View the top genomic features with different temporal patterns between groups
-head(dm_results_two)
+head(rowData(Dat_sce)$mist_int_2group)
 ```
 
 ## Conclusion

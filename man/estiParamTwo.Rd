@@ -4,7 +4,14 @@
 \alias{estiParamTwo}
 \title{Parameter Estimation for Two-Group Scenario}
 \usage{
-estiParamTwo(Dat_sce, Dat_name_g1, Dat_name_g2, ptime_name_g1, ptime_name_g2)
+estiParamTwo(
+  Dat_sce,
+  Dat_name_g1,
+  Dat_name_g2,
+  ptime_name_g1,
+  ptime_name_g2,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{Dat_sce}{A \code{SingleCellExperiment} object containing the single-cell DNA methylation level.
@@ -18,10 +25,13 @@ and cells in colnames.}
 \item{ptime_name_g1}{A character string specifying the name of the column in \code{colData} for the group 1 pseudotime vector.}
 
 \item{ptime_name_g2}{A character string specifying the name of the column in \code{colData} for the group 2 pseudotime vector.}
+
+\item{verbose}{A logical value indicating whether to print progress messages to the console.
+Defaults to \code{TRUE}. Set to \code{FALSE} to suppress messages.}
 }
 \value{
-A list containing two elements, one for each group, where each element is a numeric list of estimated
-parameters for all genomic features. Each element includes:
+The updated sce object with two matrices in the rowData, one for each group, where each matrix contains estimated
+parameters for all genomic features, including:
 \itemize{
 \item \eqn{\beta_0} to \eqn{\beta_4}: Estimated coefficients for the polynomial of degree 4.
 \item \eqn{\sigma^2_1} to \eqn{\sigma^2_4}: Estimated variances for each stage along the pseudotime.
@@ -34,7 +44,7 @@ separately for two groups, to produce the parameters required for differential m
 \examples{
 library(SingleCellExperiment)
 data <- readRDS(system.file("extdata", "small_sampleData_sce.rds", package = "mist"))
-beta_sigma_list_group <- estiParamTwo(
+Dat_sce_new <- estiParamTwo(
     Dat_sce = data,
     Dat_name_g1 = "Methy_level_group1",
     Dat_name_g2 = "Methy_level_group2",

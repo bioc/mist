@@ -1,6 +1,6 @@
 Package: mist
 Title: Differential Methylation Analysis for scDNAm Data
-Version: 0.99.6
+Version: 0.99.7
 Depends: R (>= 4.3.0)
 Authors@R: 
     person("Daoyu", "Duan", , "dxd429@case.edu", role = c("aut", "cre"),
@@ -13,6 +13,8 @@ Description: mist (Methylation Inference for Single-cell along Trajectory) is a 
  sampling to estimate parameters for temporal changes and stage-specific variations.
 License: MIT + file LICENSE
 Encoding: UTF-8
+URL: https://https://github.com/dxd429/mist
+BugReports: https://https://github.com/dxd429/mist/issues
 biocViews: Epigenetics, DifferentialMethylation, DNAMethylation, SingleCell, Software
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
@@ -29,10 +31,10 @@ Imports:
     SingleCellExperiment,
     BiocGenerics,
     stats,
-    ggplot2,
     rlang
 Suggests: 
     knitr,
     rmarkdown,
-    RUnit
+    RUnit,
+    ggplot2
 VignetteBuilder: knitr

@@ -1,3 +1,9 @@
-# mist 0.99.0
+# mist 0.99.7
 
-* Added a `NEWS.md` file to track changes to the package.
+* Added URL and BugReports fields in DESCRIPTION.
+* Moved ggplot2 to Suggests.
+* Updated BiocStyle in Vignettes.
+* Added .man pages for example data.
+* Added verbose arguments to functions for users to control message   printing.
+* Added BPPARAM = SnowParam() to bplapply() used in functions.
+* Updated functions to use the sce object as both the input and ouput.

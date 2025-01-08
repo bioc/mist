@@ -4,7 +4,7 @@
 \alias{estiParamSingle}
 \title{Parameter Estimation for Single-Group}
 \usage{
-estiParamSingle(Dat_sce, Dat_name, ptime_name)
+estiParamSingle(Dat_sce, Dat_name, ptime_name, verbose = TRUE)
 }
 \arguments{
 \item{Dat_sce}{A \code{SingleCellExperiment} object containing the single-cell DNA methylation level.
@@ -14,9 +14,12 @@ and cells in colnames.}
 \item{Dat_name}{A character string specifying the name of the assay to extract the methylation level data.}
 
 \item{ptime_name}{A character string specifying the name of the column in \code{colData} containing the pseudotime vector.}
+
+\item{verbose}{A logical value indicating whether to print progress messages to the console.
+Defaults to \code{TRUE}. Set to \code{FALSE} to suppress messages.}
 }
 \value{
-A numeric list of estimated parameters for all genomic features, including:
+The updated sce object with A numeric matrix of estimated parameters for all genomic features in the rowData, including:
 \itemize{
 \item \eqn{\beta_0} to \eqn{\beta_4}: Estimated coefficients for the polynomial of degree 4.
 \item \eqn{\sigma^2_1} to \eqn{\sigma^2_4}: Estimated variances for each stage along the pseudotime.
@@ -29,7 +32,7 @@ to produce the parameters required for differential methylation analysis.
 \examples{
 library(SingleCellExperiment)
 data <- readRDS(system.file("extdata", "small_sampleData_sce.rds", package = "mist"))
-beta_sigma_list <- estiParamSingle(
+Dat_sce_new <- estiParamSingle(
     Dat_sce = data,
     Dat_name = "Methy_level_group1",
     ptime_name = "pseudotime"

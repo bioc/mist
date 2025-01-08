@@ -10,9 +10,11 @@
 #' @param Dat_name_g2 A character string specifying the name of the assay to extract the group 2 methylation level data.
 #' @param ptime_name_g1 A character string specifying the name of the column in `colData` for the group 1 pseudotime vector.
 #' @param ptime_name_g2 A character string specifying the name of the column in `colData` for the group 2 pseudotime vector.
-#'
-#' @return A list containing two elements, one for each group, where each element is a numeric list of estimated
-#'   parameters for all genomic features. Each element includes:
+#' @param verbose A logical value indicating whether to print progress messages to the console.
+#'   Defaults to \code{TRUE}. Set to \code{FALSE} to suppress messages.
+#'   
+#' @return The updated sce object with two matrices in the rowData, one for each group, where each matrix contains estimated
+#'   parameters for all genomic features, including:
 #'   - \eqn{\beta_0} to \eqn{\beta_4}: Estimated coefficients for the polynomial of degree 4.
 #'   - \eqn{\sigma^2_1} to \eqn{\sigma^2_4}: Estimated variances for each stage along the pseudotime.
 #'
@@ -23,7 +25,7 @@
 #' @examples
 #' library(SingleCellExperiment)
 #' data <- readRDS(system.file("extdata", "small_sampleData_sce.rds", package = "mist"))
-#' beta_sigma_list_group <- estiParamTwo(
+#' Dat_sce_new <- estiParamTwo(
 #'     Dat_sce = data,
 #'     Dat_name_g1 = "Methy_level_group1",
 #'     Dat_name_g2 = "Methy_level_group2",
@@ -34,7 +36,8 @@ estiParamTwo <- function(Dat_sce,
                          Dat_name_g1,
                          Dat_name_g2,
                          ptime_name_g1,
-                         ptime_name_g2) {
+                         ptime_name_g2,
+                         verbose = TRUE) {
   ######## 1. Input Validation
   # Check if Dat_sce is a SingleCellExperiment object
   if (!methods::is(Dat_sce, "SingleCellExperiment")) {
@@ -84,29 +87,33 @@ estiParamTwo <- function(Dat_sce,
 
   ptime_group1_all <- ptime_group1 / max(ptime_group1)
   ptime_group2_all <- ptime_group2 / max(ptime_group2)
-  message("Pseudotime cleaning and normalization to [0, 1] completed.")
+  if (verbose) message("Pseudotime cleaning and normalization to [0, 1] completed.")
 
   ######## 3. Remove Genomic Features Containing Only 0/1 Values
-  rmRes_group1 <- BiocParallel::bplapply(scDNAm_mat_group1, rmBad, ptime_all = ptime_group1_all)
-  rmRes_group2 <- BiocParallel::bplapply(scDNAm_mat_group2, rmBad, ptime_all = ptime_group2_all)
+  rmRes_group1 <- BiocParallel::bplapply(scDNAm_mat_group1, rmBad, ptime_all = ptime_group1_all,
+                                         BPPARAM = SnowParam())
+  rmRes_group2 <- BiocParallel::bplapply(scDNAm_mat_group2, rmBad, ptime_all = ptime_group2_all,
+                                         BPPARAM = SnowParam())
 
   rmIndex_group1 <- which(unlist(rmRes_group1) == 1)
   rmIndex_group2 <- which(unlist(rmRes_group2) == 1)
 
   scDNAm_mat_clean_group1 <- scDNAm_mat_group1[!seq_len(nrow(scDNAm_mat_group1)) %in% rmIndex_group1, ]
   scDNAm_mat_clean_group2 <- scDNAm_mat_group2[!seq_len(nrow(scDNAm_mat_group2)) %in% rmIndex_group2, ]
-  message("Removal of genomic features with too many 0/1 values completed.")
+  if (verbose) message("Removal of genomic features with too many 0/1 values completed.")
 
   ######## 4. Parameter Estimation using Gibbs Sampling
   beta_sigma_list_group1 <- BiocParallel::bplapply(seq_len(nrow(scDNAm_mat_clean_group1)),
                                                    run_bayesian_estimation,
                                                    dat_ready = scDNAm_mat_clean_group1,
-                                                   ptime_all = ptime_group1_all)
+                                                   ptime_all = ptime_group1_all,
+                                                   BPPARAM = SnowParam())
 
   beta_sigma_list_group2 <- BiocParallel::bplapply(seq_len(nrow(scDNAm_mat_clean_group2)),
                                                    run_bayesian_estimation,
                                                    dat_ready = scDNAm_mat_clean_group2,
-                                                   ptime_all = ptime_group2_all)
+                                                   ptime_all = ptime_group2_all,
+                                                   BPPARAM = SnowParam())
 
   ######## 5. Name the Results
   name_vector <- c("Beta_0", "Beta_1", "Beta_2", "Beta_3", "Beta_4", "Sigma2_1", "Sigma2_2", "Sigma2_3", "Sigma2_4")
@@ -123,7 +130,8 @@ estiParamTwo <- function(Dat_sce,
   ######## 6. Assign Genomic Feature Names
   names(beta_sigma_list_group1) <- rownames(scDNAm_mat_clean_group1)
   names(beta_sigma_list_group2) <- rownames(scDNAm_mat_clean_group2)
-
-  ######## 7. Return the Results
-  return(list(Group1 = beta_sigma_list_group1, Group2 = beta_sigma_list_group2))
+  rowData(Dat_sce)$mist_pars_group1 <- do.call(rbind, beta_sigma_list_group1)
+  rowData(Dat_sce)$mist_pars_group2 <- do.call(rbind, beta_sigma_list_group2)
+  ######## 7. Return the final sce object
+  return(Dat_sce)
 }

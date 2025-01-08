@@ -3,34 +3,42 @@
 #' Generates a scatter plot of methylation levels vs. pseudotime for a specific gene,
 #' overlaid with the fitted curve based on the estimated coefficients.
 #'
-#' @param Dat_sce A `SingleCellExperiment` object containing the single-cell DNA methylation level.
-#'   Methylation levels should be stored as assays, with genomic feature (gene) names in rownames
-#'   and cells in colnames.
+#' @param Dat_sce The updated sce object with A numeric matrix of estimated parameters for all genomic features in the rowData, including:
+#'   - \eqn{\beta_0} to \eqn{\beta_4}: Estimated coefficients for the polynomial of degree 4.
+#'   - \eqn{\sigma^2_1} to \eqn{\sigma^2_4}: Estimated variances for each stage along the pseudotime.
 #' @param Dat_name A character string specifying the name of the assay to extract the methylation data.
 #' @param ptime_name A character string specifying the name of the colData to extract the pseudotime vector.
-#' @param beta_sigma_list A named numeric list of estimated coefficients (output of `estiParamSingle`).
 #' @param gene_name A character string specifying the gene name to plot.
 #'
 #' @return A ggplot2 scatter plot with an overlayed fitted curve.
 #' @import rlang
-#' @importFrom ggplot2 ggplot aes geom_line geom_point labs theme_classic
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#' plotGene(Dat_sce = Dat_sce,
+#' library(SingleCellExperiment)
+#' data <- readRDS(system.file("extdata", "small_sampleData_sce.rds", package = "mist"))
+#' Dat_sce_new <- estiParamSingle(
+#'     Dat_sce = data,
+#'     Dat_name = "Methy_level_group1",
+#'     ptime_name = "pseudotime"
+#' )
+#' plotGene(Dat_sce = Dat_sce_new,
 #' Dat_name = "Methy_level_group1",
 #' ptime_name = "pseudotime",
-#' beta_sigma_list,
 #' gene_name = "ENSMUSG00000000037")
-#' }
-plotGene <- function(Dat_sce, Dat_name, ptime_name, beta_sigma_list, gene_name) {
+plotGene <- function(Dat_sce, Dat_name, ptime_name, gene_name) {
   # Check if Dat_sce is a SingleCellExperiment object
   if (!methods::is(Dat_sce, "SingleCellExperiment")) {
     stop("Dat_sce must be a SingleCellExperiment object.",
          call. = TRUE, domain = NULL)
   }
-
+  mist_pars_matrix <- rowData(Dat_sce)$mist_pars
+  
+  # Convert the matrix back to a list
+  beta_sigma_list <- split(as.data.frame(mist_pars_matrix), rownames(mist_pars_matrix))
+  
+  # Convert each row back to a numeric vector
+  beta_sigma_list <- lapply(beta_sigma_list, as.numeric)
   # Extract scDNAm matrix and pseudotime
   scDNAm_mat <- assay(Dat_sce, Dat_name)
   ptime <- colData(Dat_sce)[[ptime_name]]
