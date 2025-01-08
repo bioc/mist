@@ -6,19 +6,20 @@ test_mist <- function() {
   #                                   ptime_name = 'pseudotime')
   # dm_results <- dmSingle(beta_sigma_list)
 
-  beta_sigma_list_group <- estiParamTwo(Dat_sce = Dat_sce,
+  Dat_sce <- estiParamTwo(Dat_sce = Dat_sce,
                                         Dat_name_g1 = 'Methy_level_group1',
                                         Dat_name_g2 = 'Methy_level_group2',
                                         ptime_name_g1 = 'pseudotime',
                                         ptime_name_g2 = 'pseudotime_g2')
-  dm_results_two <- dmTwoGroups(beta_sigma_list_group)
+  Dat_sce <- dmTwoGroups(Dat_sce)
 
 
   #checkEquals(length(dm_results), 5)
   #checkTrue(all(dm_results >= 0))
-  checkTrue(all(names(beta_sigma_list_group) == c("Group1", "Group2")))
-  checkEquals(length(dm_results_two), 5)
-  checkTrue(all(dm_results_two >= 0))
+  checkEquals(nrow(rowData(Dat_sce)$mist_pars_group1), 5)
+  checkEquals(nrow(rowData(Dat_sce)$mist_pars_group2), 5)
+  checkEquals(length(rowData(Dat_sce)$mist_int_2group), 5)
+  checkTrue(all(rowData(Dat_sce)$mist_int_2group >= 0))
 
 
 }

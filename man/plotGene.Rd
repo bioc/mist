@@ -28,6 +28,7 @@ overlaid with the fitted curve based on the estimated coefficients.
 }
 \examples{
 library(SingleCellExperiment)
+library(ggplot2)
 data <- readRDS(system.file("extdata", "small_sampleData_sce.rds", package = "mist"))
 Dat_sce_new <- estiParamSingle(
     Dat_sce = data,

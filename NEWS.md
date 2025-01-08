@@ -1,4 +1,4 @@
-# mist 0.99.7
+# mist 0.99.8
 
 * Added URL and BugReports fields in DESCRIPTION.
 * Moved ggplot2 to Suggests.
@@ -7,3 +7,4 @@
 * Added verbose arguments to functions for users to control message   printing.
 * Added BPPARAM = SnowParam() to bplapply() used in functions.
 * Updated functions to use the sce object as both the input and ouput.
+
