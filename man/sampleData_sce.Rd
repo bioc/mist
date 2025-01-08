@@ -6,7 +6,7 @@
   A single-cell dataset for testing and illustration purposes, derived from the GEO dataset GSE121708. The data contains DNA methylation information from mouse gastrulation experiments at the single-cell level.
 }
 \usage{
-data("sampleData_sce")
+Dat_sce <- readRDS(system.file("extdata", "sampleData_sce.rds", package = "mist"))
 }
 \format{
 A \code{SingleCellExperiment} object containing:
@@ -37,6 +37,6 @@ The data originates from the GEO dataset GSE121708, as described in:
 }
 }
 \examples{
-data("sampleData_sce")
-sampleData_sce
+Dat_sce <- readRDS(system.file("extdata", "sampleData_sce.rds", package = "mist"))
+
 }
