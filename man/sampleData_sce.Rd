@@ -5,9 +5,7 @@
 \description{
   A single-cell dataset for testing and illustration purposes, derived from the GEO dataset GSE121708. The data contains DNA methylation information from mouse gastrulation experiments at the single-cell level.
 }
-\usage{
-system.file("extdata", "sampleData_sce.rds", package = "mist")
-}
+
 \format{
 A \code{SingleCellExperiment} object containing:
 \itemize{

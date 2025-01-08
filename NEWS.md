@@ -1,4 +1,4 @@
-# mist 0.99.10
+# mist 0.99.11
 
 * Added URL and BugReports fields in DESCRIPTION.
 * Moved ggplot2 to Suggests.
