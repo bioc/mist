@@ -28,6 +28,9 @@
 #' ptime_name = "pseudotime",
 #' gene_name = "ENSMUSG00000000037")
 plotGene <- function(Dat_sce, Dat_name, ptime_name, gene_name) {
+  # Check if ggplot2 is available
+  if (!requireNamespace('ggplot2', quietly = TRUE))
+    stop("Install 'ggplot2' to use this function.")
   # Check if Dat_sce is a SingleCellExperiment object
   if (!methods::is(Dat_sce, "SingleCellExperiment")) {
     stop("Dat_sce must be a SingleCellExperiment object.",
@@ -73,13 +76,13 @@ plotGene <- function(Dat_sce, Dat_name, ptime_name, gene_name) {
     Fitted = fitted_values
   )
 
-  ggplot(plot_data, aes(x = .data$Pseudotime)) +
-    geom_point(aes(y = .data$Methylation), color = "blue", alpha = 0.7, size = 2) +
-    geom_line(aes(y = .data$Fitted), color = "red", linewidth = 1) +
-    labs(
+  ggplot2::ggplot(plot_data, aes(x = .data$Pseudotime)) +
+    ggplot2::geom_point(aes(y = .data$Methylation), color = "blue", alpha = 0.7, size = 2) +
+    ggplot2::geom_line(aes(y = .data$Fitted), color = "red", linewidth = 1) +
+    ggplot2::labs(
       title = paste("Methylation Levels vs. Pseudotime for Gene:", gene_name),
       x = "Pseudotime",
       y = "Methylation Level"
     ) +
-    theme_classic()
+    ggplot2::theme_classic()
 }
