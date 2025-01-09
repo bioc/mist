@@ -4,7 +4,13 @@
 \alias{estiParamSingle}
 \title{Parameter Estimation for Single-Group}
 \usage{
-estiParamSingle(Dat_sce, Dat_name, ptime_name, verbose = TRUE)
+estiParamSingle(
+  Dat_sce,
+  Dat_name,
+  ptime_name,
+  BPPARAM = SnowParam(),
+  verbose = TRUE
+)
 }
 \arguments{
 \item{Dat_sce}{A \code{SingleCellExperiment} object containing the single-cell DNA methylation level.
@@ -14,6 +20,8 @@ and cells in colnames.}
 \item{Dat_name}{A character string specifying the name of the assay to extract the methylation level data.}
 
 \item{ptime_name}{A character string specifying the name of the column in \code{colData} containing the pseudotime vector.}
+
+\item{BPPARAM}{A \code{BiocParallelParam} object specifying the parallel backend for computations, as used in \code{bplapply()}. Defaults to \code{SnowParam()} for cluster-based parallel processing.}
 
 \item{verbose}{A logical value indicating whether to print progress messages to the console.
 Defaults to \code{TRUE}. Set to \code{FALSE} to suppress messages.}

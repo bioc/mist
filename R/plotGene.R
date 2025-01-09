@@ -76,9 +76,9 @@ plotGene <- function(Dat_sce, Dat_name, ptime_name, gene_name) {
     Fitted = fitted_values
   )
 
-  ggplot2::ggplot(plot_data, aes(x = .data$Pseudotime)) +
-    ggplot2::geom_point(aes(y = .data$Methylation), color = "blue", alpha = 0.7, size = 2) +
-    ggplot2::geom_line(aes(y = .data$Fitted), color = "red", linewidth = 1) +
+  ggplot2::ggplot(plot_data, ggplot2::aes(x = .data$Pseudotime)) +
+    ggplot2::geom_point(ggplot2::aes(y = .data$Methylation), color = "blue", alpha = 0.7, size = 2) +
+    ggplot2::geom_line(ggplot2::aes(y = .data$Fitted), color = "red", linewidth = 1) +
     ggplot2::labs(
       title = paste("Methylation Levels vs. Pseudotime for Gene:", gene_name),
       x = "Pseudotime",

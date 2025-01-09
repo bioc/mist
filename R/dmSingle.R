@@ -7,6 +7,8 @@
 #' @param Dat_sce The updated sce object with A numeric matrix of estimated parameters for all genomic features in the rowData, including:
 #'   - \eqn{\beta_0} to \eqn{\beta_4}: Estimated coefficients for the polynomial of degree 4.
 #'   - \eqn{\sigma^2_1} to \eqn{\sigma^2_4}: Estimated variances for each stage along the pseudotime.
+#' 
+#' @param BPPARAM A `BiocParallelParam` object specifying the parallel backend for computations, as used in `bplapply()`. Defaults to `SnowParam()` for cluster-based parallel processing.
 #'   
 #' @return The updated sce object with A named numeric vector where each value corresponds to a genomic feature
 #' (e.g., a gene) in the rowData. The values represent the minimum area between the fitted curve
@@ -32,7 +34,8 @@
 #'     ptime_name = "pseudotime"
 #' )
 #' dm_sce <- dmSingle(Dat_sce_new)
-dmSingle <- function(Dat_sce) {
+dmSingle <- function(Dat_sce,
+                     BPPARAM = SnowParam()) {
   ######## 1. Input Validation
   # Ensure input is a SingleCellExperiment object
   if (!methods::is(Dat_sce, "SingleCellExperiment")) {
@@ -48,14 +51,14 @@ dmSingle <- function(Dat_sce) {
   beta_sigma_list <- lapply(split(as.data.frame(mist_pars_matrix), rownames(mist_pars_matrix)), as.numeric)
   
   # Identify valid features (no NA/Inf values) in a single step
-  valid_features <- sapply(beta_sigma_list, function(x) all(is.finite(x)))
+  valid_features <- vapply(beta_sigma_list, function(x) all(is.finite(x)), logical(1))
   
   # Subset valid features only
   beta_mu_mean <- beta_sigma_list[valid_features]
   
   ######## 3. Integral Calculation for Each Genomic Feature
   # Compute integrals in parallel with efficient chunking
-  int_list <- bplapply(beta_mu_mean, calculate_integral, BPPARAM = SnowParam())
+  int_list <- bplapply(beta_mu_mean, calculate_integral, BPPARAM = BPPARAM)
   
   # Assign names of valid features to the result
   names(int_list) <- names(beta_mu_mean)

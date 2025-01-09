@@ -10,6 +10,7 @@ estiParamTwo(
   Dat_name_g2,
   ptime_name_g1,
   ptime_name_g2,
+  BPPARAM = SnowParam(),
   verbose = TRUE
 )
 }
@@ -25,6 +26,8 @@ and cells in colnames.}
 \item{ptime_name_g1}{A character string specifying the name of the column in \code{colData} for the group 1 pseudotime vector.}
 
 \item{ptime_name_g2}{A character string specifying the name of the column in \code{colData} for the group 2 pseudotime vector.}
+
+\item{BPPARAM}{A \code{BiocParallelParam} object specifying the parallel backend for computations, as used in \code{bplapply()}. Defaults to \code{SnowParam()} for cluster-based parallel processing.}
 
 \item{verbose}{A logical value indicating whether to print progress messages to the console.
 Defaults to \code{TRUE}. Set to \code{FALSE} to suppress messages.}

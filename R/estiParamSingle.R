@@ -8,6 +8,7 @@
 #'   and cells in colnames.
 #' @param Dat_name A character string specifying the name of the assay to extract the methylation level data.
 #' @param ptime_name A character string specifying the name of the column in `colData` containing the pseudotime vector.
+#' @param BPPARAM A `BiocParallelParam` object specifying the parallel backend for computations, as used in `bplapply()`. Defaults to `SnowParam()` for cluster-based parallel processing.
 #' @param verbose A logical value indicating whether to print progress messages to the console.
 #'   Defaults to \code{TRUE}. Set to \code{FALSE} to suppress messages.
 #'   
@@ -30,6 +31,7 @@
 estiParamSingle <- function(Dat_sce,
                             Dat_name,
                             ptime_name,
+                            BPPARAM = SnowParam(),
                             verbose = TRUE) {
   ######## 1. Input Validation
   # Check if Dat_sce is a SingleCellExperiment object
@@ -67,7 +69,7 @@ estiParamSingle <- function(Dat_sce,
 
   ###### 3. Remove Genomic Features Containing Only 0/1 Values in All Timepoints
   rmRes <- BiocParallel::bplapply(scDNAm_mat, rmBad, ptime_all = ptime_all,
-                                  BPPARAM = SnowParam())
+                                  BPPARAM = BPPARAM)
   rmIndex <- which(unlist(rmRes) == 1)
   scDNAm_mat_clean <- scDNAm_mat[!seq_len(nrow(scDNAm_mat)) %in% rmIndex, ]
   if (verbose) message("Removal of genomic features with too many 0/1 values completed.")
@@ -75,7 +77,7 @@ estiParamSingle <- function(Dat_sce,
   ###### 4. Parameter Estimation using Gibbs Sampling
   beta_sigma_list <- BiocParallel::bplapply(seq_len(nrow(scDNAm_mat_clean)), run_bayesian_estimation,
                                             dat_ready = scDNAm_mat_clean, ptime_all = ptime_all,
-                                            BPPARAM = SnowParam())
+                                            BPPARAM = BPPARAM)
 
   # Assign names to the parameters
   name_vector <- c("Beta_0", "Beta_1", "Beta_2", "Beta_3", "Beta_4", "Sigma2_1", "Sigma2_2", "Sigma2_3", "Sigma2_4")

@@ -4,7 +4,7 @@
 \alias{dmSingle}
 \title{Differential methylation evaluation over time for scDNA-seq data under the 1-group scenario.}
 \usage{
-dmSingle(Dat_sce)
+dmSingle(Dat_sce, BPPARAM = SnowParam())
 }
 \arguments{
 \item{Dat_sce}{The updated sce object with A numeric matrix of estimated parameters for all genomic features in the rowData, including:
@@ -12,6 +12,8 @@ dmSingle(Dat_sce)
 \item \eqn{\beta_0} to \eqn{\beta_4}: Estimated coefficients for the polynomial of degree 4.
 \item \eqn{\sigma^2_1} to \eqn{\sigma^2_4}: Estimated variances for each stage along the pseudotime.
 }}
+
+\item{BPPARAM}{A \code{BiocParallelParam} object specifying the parallel backend for computations, as used in \code{bplapply()}. Defaults to \code{SnowParam()} for cluster-based parallel processing.}
 }
 \value{
 The updated sce object with A named numeric vector where each value corresponds to a genomic feature

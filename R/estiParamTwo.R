@@ -10,6 +10,7 @@
 #' @param Dat_name_g2 A character string specifying the name of the assay to extract the group 2 methylation level data.
 #' @param ptime_name_g1 A character string specifying the name of the column in `colData` for the group 1 pseudotime vector.
 #' @param ptime_name_g2 A character string specifying the name of the column in `colData` for the group 2 pseudotime vector.
+#' @param BPPARAM A `BiocParallelParam` object specifying the parallel backend for computations, as used in `bplapply()`. Defaults to `SnowParam()` for cluster-based parallel processing.
 #' @param verbose A logical value indicating whether to print progress messages to the console.
 #'   Defaults to \code{TRUE}. Set to \code{FALSE} to suppress messages.
 #'   
@@ -19,7 +20,7 @@
 #'   - \eqn{\sigma^2_1} to \eqn{\sigma^2_4}: Estimated variances for each stage along the pseudotime.
 #'
 #' @import MCMCpack BiocParallel car mvtnorm SummarizedExperiment SingleCellExperiment BiocGenerics
-#' @importFrom stats pgamma poly qgamma rnorm runif
+#' @importFrom stats pgamma poly qgamma rnorm runif setNames
 #' @export
 #'
 #' @examples
@@ -37,6 +38,7 @@ estiParamTwo <- function(Dat_sce,
                          Dat_name_g2,
                          ptime_name_g1,
                          ptime_name_g2,
+                         BPPARAM = SnowParam(),
                          verbose = TRUE) {
   ######## 1. Input Validation
   # Ensure input validity
@@ -87,7 +89,7 @@ estiParamTwo <- function(Dat_sce,
       group1 = if (!is.null(group1_estimation)) setNames(group1_estimation, c("Beta_0", "Beta_1", "Beta_2", "Beta_3", "Beta_4", "Sigma2_1", "Sigma2_2", "Sigma2_3", "Sigma2_4")) else NULL,
       group2 = if (!is.null(group2_estimation)) setNames(group2_estimation, c("Beta_0", "Beta_1", "Beta_2", "Beta_3", "Beta_4", "Sigma2_1", "Sigma2_2", "Sigma2_3", "Sigma2_4")) else NULL
     )
-  }, BPPARAM = SnowParam())
+  }, BPPARAM = BPPARAM)
   
   ######## 4. Post-Processing
   # Extract results for group 1 and group 2
@@ -95,12 +97,12 @@ estiParamTwo <- function(Dat_sce,
   beta_sigma_list_group2 <- lapply(combined_results, `[[`, "group2")
   
   # Remove NULL entries (invalid genomic features)
-  beta_sigma_list_group1 <- beta_sigma_list_group1[!sapply(beta_sigma_list_group1, is.null)]
-  beta_sigma_list_group2 <- beta_sigma_list_group2[!sapply(beta_sigma_list_group2, is.null)]
+  beta_sigma_list_group1 <- beta_sigma_list_group1[!vapply(beta_sigma_list_group1, is.null, logical(1))]
+  beta_sigma_list_group2 <- beta_sigma_list_group2[!vapply(beta_sigma_list_group2, is.null, logical(1))]
   
   # Assign genomic feature names
-  names(beta_sigma_list_group1) <- rownames(scDNAm_mat_group1)[!sapply(beta_sigma_list_group1, is.null)]
-  names(beta_sigma_list_group2) <- rownames(scDNAm_mat_group2)[!sapply(beta_sigma_list_group2, is.null)]
+  names(beta_sigma_list_group1) <- rownames(scDNAm_mat_group1)[!vapply(beta_sigma_list_group1, is.null, logical(1))]
+  names(beta_sigma_list_group2) <- rownames(scDNAm_mat_group2)[!vapply(beta_sigma_list_group2, is.null, logical(1))]
   
   ######## 5. Assign Results to Dat_sce
   rowData(Dat_sce)$mist_pars_group1 <- do.call(rbind, beta_sigma_list_group1)
