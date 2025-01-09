@@ -10,4 +10,8 @@
 
 # mist 0.99.13
 
-* Added ggplot2 check in plotGene()
+* Added ggplot2 check in plotGene().
+
+# mist 0.99.14
+
+* Improve the efficiency of functions.
