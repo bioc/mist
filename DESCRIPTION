@@ -1,6 +1,6 @@
 Package: mist
 Title: Differential Methylation Analysis for scDNAm Data
-Version: 0.99.15
+Version: 0.99.16
 Depends: R (>= 4.5.0)
 Authors@R: 
     person("Daoyu", "Duan", , "dxd429@case.edu", role = c("aut", "cre"),

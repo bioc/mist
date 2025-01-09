@@ -58,10 +58,10 @@ dmTwoGroups <- function(Dat_sce,
   beta_sigma_list_group <- lapply(beta_sigma_list_group, `[`, common_names)
   
   # Simplify feature validation using vectorized operations
-  valid_features <- sapply(common_names, function(name) {
+  valid_features <- vapply(common_names, function(name) {
     all(is.finite(as.numeric(beta_sigma_list_group$Group1[[name]]))) && 
       all(is.finite(as.numeric(beta_sigma_list_group$Group2[[name]])))
-  })
+  }, logical(1))
   
   # Subset valid features only
   beta_mu_mean_group1 <- beta_sigma_list_group$Group1[valid_features]

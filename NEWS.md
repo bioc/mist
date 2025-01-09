@@ -16,7 +16,7 @@
 
 * Improved the efficiency of functions.
 
-# mist 0.99.15
+# mist 0.99.16
 
 * Added BPPARAM arguments
 * sapply() to vapply()
