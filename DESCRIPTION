@@ -1,6 +1,6 @@
 Package: mist
 Title: Differential Methylation Analysis for scDNAm Data
-Version: 0.99.16
+Version: 0.99.17
 Depends: R (>= 4.5.0)
 Authors@R: 
     person("Daoyu", "Duan", , "dxd429@case.edu", role = c("aut", "cre"),
@@ -36,5 +36,6 @@ Suggests:
     knitr,
     rmarkdown,
     RUnit,
-    ggplot2
+    ggplot2,
+    BiocStyle
 VignetteBuilder: knitr
