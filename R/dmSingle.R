@@ -8,7 +8,7 @@
 #'   - \eqn{\beta_0} to \eqn{\beta_4}: Estimated coefficients for the polynomial of degree 4.
 #'   - \eqn{\sigma^2_1} to \eqn{\sigma^2_4}: Estimated variances for each stage along the pseudotime.
 #' 
-#' @param BPPARAM A `BiocParallelParam` object specifying the parallel backend for computations, as used in `bplapply()`. Defaults to `SnowParam()` for cluster-based parallel processing.
+#' @param BPPARAM A `BiocParallelParam` object specifying the parallel backend for computations, as used in `bplapply()`. Defaults to `MulticoreParam()` for parallel processing.
 #'   
 #' @return The updated sce object with A named numeric vector where each value corresponds to a genomic feature
 #' (e.g., a gene) in the rowData. The values represent the minimum area between the fitted curve
@@ -27,15 +27,15 @@
 #'
 #' @examples
 #' library(mist)
-#' data <- readRDS(system.file("extdata", "small_sampleData_sce.rds", package = "mist"))
-#' Dat_sce_new <- estiParamSingle(
+#' data <- readRDS(system.file("extdata", "group1_sampleData_sce.rds", package = "mist"))
+#' Dat_sce_new <- estiParam(
 #'     Dat_sce = data,
 #'     Dat_name = "Methy_level_group1",
 #'     ptime_name = "pseudotime"
 #' )
 #' dm_sce <- dmSingle(Dat_sce_new)
 dmSingle <- function(Dat_sce,
-                     BPPARAM = SnowParam()) {
+                     BPPARAM = MulticoreParam()) {
   ######## 1. Input Validation
   # Ensure input is a SingleCellExperiment object
   if (!methods::is(Dat_sce, "SingleCellExperiment")) {

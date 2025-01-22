@@ -4,7 +4,7 @@
 \alias{dmSingle}
 \title{Differential methylation evaluation over time for scDNA-seq data under the 1-group scenario.}
 \usage{
-dmSingle(Dat_sce, BPPARAM = SnowParam())
+dmSingle(Dat_sce, BPPARAM = MulticoreParam())
 }
 \arguments{
 \item{Dat_sce}{The updated sce object with A numeric matrix of estimated parameters for all genomic features in the rowData, including:
@@ -13,7 +13,7 @@ dmSingle(Dat_sce, BPPARAM = SnowParam())
 \item \eqn{\sigma^2_1} to \eqn{\sigma^2_4}: Estimated variances for each stage along the pseudotime.
 }}
 
-\item{BPPARAM}{A \code{BiocParallelParam} object specifying the parallel backend for computations, as used in \code{bplapply()}. Defaults to \code{SnowParam()} for cluster-based parallel processing.}
+\item{BPPARAM}{A \code{BiocParallelParam} object specifying the parallel backend for computations, as used in \code{bplapply()}. Defaults to \code{MulticoreParam()} for parallel processing.}
 }
 \value{
 The updated sce object with A named numeric vector where each value corresponds to a genomic feature
@@ -30,8 +30,8 @@ the developmental-stage-specific biological variations.
 }
 \examples{
 library(mist)
-data <- readRDS(system.file("extdata", "small_sampleData_sce.rds", package = "mist"))
-Dat_sce_new <- estiParamSingle(
+data <- readRDS(system.file("extdata", "group1_sampleData_sce.rds", package = "mist"))
+Dat_sce_new <- estiParam(
     Dat_sce = data,
     Dat_name = "Methy_level_group1",
     ptime_name = "pseudotime"

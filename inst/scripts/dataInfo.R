@@ -18,7 +18,6 @@
 # 3. Pseudotime Inference:
 #    - Pseudotime was inferred using the default settings in Monocle3.
 # 4. Subsampling for Illustration and Testing:
-#    - For illustration purposes (e.g., vignette generation), a random sample of 100 genes was selected to create `sampleData_sce.rds`.
-#    - For unit tests and function help pages, a random sample of 5 genes was selected to create `small_sampleData_sce.rds`.
+#    - For illustration purposes (e.g., vignette generation), random samples of 5 genes were selected to create `group1_sampleData_sce.rds` and `group2_sampleData_sce.rds`.
 #    - Note: The sampling was random without using a seed, so results may not be reproducible.
 

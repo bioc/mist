@@ -29,13 +29,12 @@ The data originates from the GEO dataset GSE121708, as described in:
     \item Pseudotime Inference: Pseudotime was inferred using the default settings in Monocle3.
     \item Subsampling:
     \itemize{
-      \item For illustration purposes (e.g., vignette generation), a random sample of 100 genes was selected to create \code{sampleData_sce.rds}.
-      \item For unit tests and function help pages, a random sample of 5 genes was selected to create \code{small_sampleData_sce.rds}.
+      \item For illustration purposes (e.g., vignette generation), a random sample of 5 genes was selected to create \code{group2_sampleData_sce.rds}.
     }
   }
 }
 }
 \examples{
-file_path <- system.file("extdata", "small_sampleData_sce.rds", package = "mist")
+file_path <- system.file("extdata", "group2_sampleData_sce.rds", package = "mist")
 Dat_sce <- readRDS(file_path)
 }

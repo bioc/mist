@@ -1,5 +1,5 @@
-rmBad <- function(dat_ori, ptime_all) {
-    dat <- dat_ori
+rmBad <- function(k, dat_ori, ptime_all) {
+    dat <- dat_ori[k,]
     # remove 0 total count
     ind_remove <- is.nan(dat)
     dat <- dat[!ind_remove]
@@ -196,7 +196,7 @@ run_bayesian_estimation <- function(k, dat_ready, ptime_all) {
         },
         error = function(e) {
             # Return NA or another suitable value for all expected outputs
-            return(rep(NA, 8)) # Update `length_of_expected_output` accordingly
+            return(rep(NA, 9)) # Update `length_of_expected_output` accordingly
         }
     )
 }

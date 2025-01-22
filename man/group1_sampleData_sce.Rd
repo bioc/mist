@@ -1,9 +1,9 @@
 \docType{data}
-\name{sampleData_sce}
-\alias{sampleData_sce}
-\title{Sample Single-Cell Data for Testing and Illustration}
+\name{small_sampleData_sce}
+\alias{small_sampleData_sce}
+\title{Small Sample Single-Cell Data for Testing and Illustration}
 \description{
-  A single-cell dataset for testing and illustration purposes, derived from the GEO dataset GSE121708. The data contains DNA methylation information from mouse gastrulation experiments at the single-cell level.
+  A small single-cell dataset for testing and illustration purposes, derived from the GEO dataset GSE121708. The data contains DNA methylation information from mouse gastrulation experiments at the single-cell level.
 }
 
 \format{
@@ -29,13 +29,12 @@ The data originates from the GEO dataset GSE121708, as described in:
     \item Pseudotime Inference: Pseudotime was inferred using the default settings in Monocle3.
     \item Subsampling:
     \itemize{
-      \item For illustration purposes (e.g., vignette generation), a random sample of 100 genes was selected to create \code{sampleData_sce.rds}.
+      \item For illustration purposes (e.g., vignette generation), a random sample of 5 genes was selected to create \code{group1_sampleData_sce.rds}.
     }
   }
 }
 }
 \examples{
-file_path <- system.file("extdata", "sampleData_sce.rds", package = "mist")
+file_path <- system.file("extdata", "group1_sampleData_sce.rds", package = "mist")
 Dat_sce <- readRDS(file_path)
-
 }

@@ -18,5 +18,11 @@
 
 # mist 0.99.16
 
-* Added BPPARAM arguments
-* sapply() to vapply()
+* Added BPPARAM arguments.
+* sapply() to vapply().
+
+# mist 0.99.18
+
+* Remove estiParamTwoGroups() so users only use estiParam() for parameter estimation.
+
+* Updated the workflow as shown in the vignetee.

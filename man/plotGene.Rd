@@ -29,8 +29,8 @@ overlaid with the fitted curve based on the estimated coefficients.
 \examples{
 library(SingleCellExperiment)
 library(ggplot2)
-data <- readRDS(system.file("extdata", "small_sampleData_sce.rds", package = "mist"))
-Dat_sce_new <- estiParamSingle(
+data <- readRDS(system.file("extdata", "group1_sampleData_sce.rds", package = "mist"))
+Dat_sce_new <- estiParam(
     Dat_sce = data,
     Dat_name = "Methy_level_group1",
     ptime_name = "pseudotime"

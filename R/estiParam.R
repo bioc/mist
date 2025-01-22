@@ -1,4 +1,4 @@
-#' Parameter Estimation for Single-Group
+#' Parameter Estimation With mist
 #'
 #' This function performs the Gibbs sampling procedure based on hierarchical Bayesian modeling
 #' to produce the parameters required for differential methylation analysis.
@@ -8,7 +8,7 @@
 #'   and cells in colnames.
 #' @param Dat_name A character string specifying the name of the assay to extract the methylation level data.
 #' @param ptime_name A character string specifying the name of the column in `colData` containing the pseudotime vector.
-#' @param BPPARAM A `BiocParallelParam` object specifying the parallel backend for computations, as used in `bplapply()`. Defaults to `SnowParam()` for cluster-based parallel processing.
+#' @param BPPARAM A `BiocParallelParam` object specifying the parallel backend for computations, as used in `bplapply()`. Defaults to `MulticoreParam()` for parallel processing.
 #' @param verbose A logical value indicating whether to print progress messages to the console.
 #'   Defaults to \code{TRUE}. Set to \code{FALSE} to suppress messages.
 #'   
@@ -22,16 +22,16 @@
 #'
 #' @examples
 #' library(SingleCellExperiment)
-#' data <- readRDS(system.file("extdata", "small_sampleData_sce.rds", package = "mist"))
-#' Dat_sce_new <- estiParamSingle(
+#' data <- readRDS(system.file("extdata", "group1_sampleData_sce.rds", package = "mist"))
+#' Dat_sce_new <- estiParam(
 #'     Dat_sce = data,
 #'     Dat_name = "Methy_level_group1",
 #'     ptime_name = "pseudotime"
 #' )
-estiParamSingle <- function(Dat_sce,
+estiParam <- function(Dat_sce,
                             Dat_name,
                             ptime_name,
-                            BPPARAM = SnowParam(),
+                            BPPARAM = MulticoreParam(),
                             verbose = TRUE) {
   ######## 1. Input Validation
   # Check if Dat_sce is a SingleCellExperiment object
@@ -68,7 +68,7 @@ estiParamSingle <- function(Dat_sce,
   if (verbose) message("Pseudotime cleaning and normalization to [0, 1] completed.")
 
   ###### 3. Remove Genomic Features Containing Only 0/1 Values in All Timepoints
-  rmRes <- BiocParallel::bplapply(scDNAm_mat, rmBad, ptime_all = ptime_all,
+  rmRes <- BiocParallel::bplapply(seq_len(nrow(scDNAm_mat)), rmBad, dat_ori = scDNAm_mat, ptime_all = ptime_all,
                                   BPPARAM = BPPARAM)
   rmIndex <- which(unlist(rmRes) == 1)
   scDNAm_mat_clean <- scDNAm_mat[!seq_len(nrow(scDNAm_mat)) %in% rmIndex, ]

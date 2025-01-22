@@ -56,13 +56,13 @@ Here we load the example data from GSE121708.
 library(mist)
 library(SingleCellExperiment)
 # Load sample scDNAm data
-Dat_sce <- readRDS(system.file("extdata", "small_sampleData_sce.rds", package = "mist"))
+Dat_sce <- readRDS(system.file("extdata", "group1_sampleData_sce.rds", package = "mist"))
 ```
 
-# Step 2: Estimate Parameters Using `estiParamSingle`
+# Step 2: Estimate Parameters Using `estiParam`
 ```{r, eval=TRUE, message=FALSE, warning=FALSE}
 # Estimate parameters for single-group
-Dat_sce <- estiParamSingle(
+Dat_sce <- estiParam(
     Dat_sce = Dat_sce,
     Dat_name = "Methy_level_group1",
     ptime_name = "pseudotime"
@@ -99,32 +99,40 @@ In this section, we will estimate parameters and perform DM analysis using data 
 
 ```{r, eval=TRUE, message=FALSE, warning=FALSE}
 # Load two-group scDNAm data
-Dat_sce <- readRDS(system.file("extdata", "small_sampleData_sce.rds", package = "mist"))
+Dat_sce_g1 <- readRDS(system.file("extdata", "group1_sampleData_sce.rds", package = "mist"))
+Dat_sce_g2 <- readRDS(system.file("extdata", "group2_sampleData_sce.rds", package = "mist"))
 ```
 
-# Step 2: Estimate Parameters Using `estiParamTwoGroups`
+# Step 2: Estimate Parameters Using `estiParam`
 ```{r, eval=TRUE, message=FALSE, warning=FALSE}
 # Estimate parameters for both groups
-Dat_sce <- estiParamTwo(
-    Dat_sce = Dat_sce,
-    Dat_name_g1 = "Methy_level_group1",
-    Dat_name_g2 = "Methy_level_group2",
-    ptime_name_g1 = "pseudotime",
-    ptime_name_g2 = "pseudotime_g2"
-)
+Dat_sce_g1 <- estiParam(
+     Dat_sce = Dat_sce_g1,
+     Dat_name = "Methy_level_group1",
+     ptime_name = "pseudotime"
+ )
+
+Dat_sce_g2 <- estiParam(
+     Dat_sce = Dat_sce_g2,
+     Dat_name = "Methy_level_group2",
+     ptime_name = "pseudotime"
+ ) 
 
 # Check the output
-head(rowData(Dat_sce)$mist_pars_group1, n = 3)
-head(rowData(Dat_sce)$mist_pars_group2, n = 3)
+head(rowData(Dat_sce_g1)$mist_pars, n = 3)
+head(rowData(Dat_sce_g2)$mist_pars, n = 3)
 ```
 
 # Step 3: Perform Differential Methylation Analysis for Two-Group Comparison Using `dmTwoGroups`
 ```{r, eval=TRUE, message=FALSE, warning=FALSE}
 # Perform DM analysis to compare the two groups
-Dat_sce <- dmTwoGroups(Dat_sce)
+dm_results <- dmTwoGroups(
+     Dat_sce_g1 = Dat_sce_g1,
+     Dat_sce_g2 = Dat_sce_g2
+ )
 
 # View the top genomic features with different temporal patterns between groups
-head(rowData(Dat_sce)$mist_int_2group)
+head(dm_results)
 ```
 
 ## Conclusion
