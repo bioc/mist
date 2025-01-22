@@ -1,12 +1,12 @@
 test_mist <- function() {
   set.seed(123)
-  Dat_sce <- readRDS(system.file("extdata", "small_sampleData_sce.rds", package = "mist"))
+  Dat_sce <- readRDS(system.file("extdata", "group1_sampleData_sce.rds", package = "mist"))
   # beta_sigma_list <- estiParamSingle(Dat_sce = Dat_sce,
   #                                    Dat_name = 'Methy_level_group1',
   #                                   ptime_name = 'pseudotime')
   # dm_results <- dmSingle(beta_sigma_list)
 
-  Dat_sce <- estiParamSingle(Dat_sce = Dat_sce,
+  Dat_sce <- estiParam(Dat_sce = Dat_sce,
                              Dat_name = "Methy_level_group1",
                              ptime_name = "pseudotime")
   Dat_sce <- dmSingle(Dat_sce)
