@@ -1,6 +1,6 @@
 \docType{data}
-\name{small_sampleData_sce_g2}
-\alias{small_sampleData_sce_g2}
+\name{small_sampleData_sce_g1}
+\alias{small_sampleData_sce_g1}
 \title{Small Sample Single-Cell Data for Testing and Illustration}
 \description{
   A small single-cell dataset for testing and illustration purposes, derived from the GEO dataset GSE121708. The data contains DNA methylation information from mouse gastrulation experiments at the single-cell level.
