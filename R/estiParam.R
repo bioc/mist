@@ -1,6 +1,6 @@
 #' Parameter Estimation With mist
 #'
-#' This function performs the Gibbs sampling procedure based on hierarchical Bayesian modeling
+#' This function performs the Gibbs sampling procedure based on a hierarchical Bayesian modeling
 #' to produce the parameters required for differential methylation analysis.
 #'
 #' @param Dat_sce A `SingleCellExperiment` object containing the single-cell DNA methylation level.
